@@ -37,3 +37,9 @@ def verify_login(email, password):
         return True
     return False
     
+def is_admin(email):
+    user = collection.find_one({"email": email})
+    if user and user.get('admin') == True:
+        return True
+    return False
+    

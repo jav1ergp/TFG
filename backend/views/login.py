@@ -1,12 +1,14 @@
 import flet as ft
-from services.db_users import verify_login
+from services.db_users import is_admin, verify_login
 
 def login(page):
     def on_login_click(e):
+        global current_user_email
         email = gmail_field.value
         password = pass_field.value
         if email and password:
             if verify_login(email, password):
+                current_user_email = email
                 page.go("/home")
             else:
                 lbl_error.value = "Usuario o contraseña incorrectos"
