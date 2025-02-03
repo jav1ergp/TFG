@@ -1,18 +1,24 @@
 from pymongo import MongoClient
 from datetime import datetime
-from models.plate import create_plate
+from models.plate import Plate
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client['parking']
 collection = db['vehicles']
 
-def save_plate_to_db(license_plate_text, confidence, date_in):
-    plate_data = create_plate(license_plate_text, confidence, date_in)
+def save_plate_to_db(plate):
+    plate_data = {
+        "plate": plate.license_plate_text,
+        "confidence": plate.confidence,
+        "date_in": plate.date_in,
+        "date_out": None
+    }
     collection.insert_one(plate_data)
         
-def handle_plate(license_plate_text, confidence, date_in):
+def handle_plate(plate):
     # Buscar el registro más reciente de la matrícula
-    latest_record = get_latest_plate_record(license_plate_text)
+    print(f"Matrícula detectada: {plate.license_plate_text}")
+    latest_record = get_latest_plate_record(plate.license_plate_text)
 
     if latest_record:
         if latest_record["date_out"] is None:
@@ -22,10 +28,10 @@ def handle_plate(license_plate_text, confidence, date_in):
 
             if time_elapsed >= 3:
                 # Actualizar date_out y cerrar el registro
-                update_plate_date_out(latest_record["_id"], date_in)
-                print(f"Date_out actualizado para la matrícula: {license_plate_text}")
+                update_plate_date_out(latest_record["_id"], plate.date_in)
+                print(f"Date_out actualizado para la matrícula: {plate.license_plate_text}")
             else:
-                print(f"No se ha alcanzado el tiempo mínimo para actualizar el registro de: {license_plate_text}")
+                print(f"No se ha alcanzado el tiempo mínimo para actualizar el registro de: {plate.license_plate_text}")
         else:
             # Calcular el tiempo transcurrido desde el último date_out
             time_elapsed = time_check(latest_record["date_out"])
@@ -33,14 +39,14 @@ def handle_plate(license_plate_text, confidence, date_in):
 
             if time_elapsed >= 3:
                 # Crear un nuevo registro si ha pasado suficiente tiempo desde el último date_out
-                save_plate_to_db(license_plate_text, confidence, date_in)
-                print(f"Nuevo registro creado para la matrícula: {license_plate_text}")
+                save_plate_to_db(plate)
+                print(f"Nuevo registro creado para la matrícula: {plate.license_plate_text}")
             else:
-                print(f"No se ha alcanzado el tiempo mínimo para crear un nuevo registro de: {license_plate_text}")
+                print(f"No se ha alcanzado el tiempo mínimo para crear un nuevo registro de: {plate.license_plate_text}")
     else:
         # Si no hay registros previos, crear un nuevo registro
-        save_plate_to_db(license_plate_text, confidence, date_in)
-        print(f"Nuevo registro creado para una matrícula no registrada: {license_plate_text}")
+        save_plate_to_db(plate)
+        print(f"Nuevo registro creado para una matrícula no registrada: {plate.license_plate_text}")
 
 
 def time_check(date_in):

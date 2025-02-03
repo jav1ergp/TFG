@@ -1,10 +1,9 @@
 from flask import Flask
-from routes import video_feed, plate_detection
+from routes import plate_detection
 
 app = Flask(__name__)
 
 # Registrar rutas
-app.register_blueprint(video_feed.bp)
 app.register_blueprint(plate_detection.bp)
 
 if __name__ == "__main__":

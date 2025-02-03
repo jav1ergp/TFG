@@ -6,6 +6,7 @@ def login(page):
         global current_user_email
         email = gmail_field.value
         password = pass_field.value
+        
         if email and password:
             if verify_login(email, password):
                 current_user_email = email

@@ -13,9 +13,6 @@ def main(page: ft.Page):
     def route_change(route):
         page.views.clear()
 
-        # Si el usuario no está autenticado, redirigir a login
-    
-
         # Verificar si el usuario es administrador antes de permitir el acceso a la página de administrador
         if route == "/admin" and not is_admin(current_user_email):
             page.go("/home")  # Redirigir a home si no es admin

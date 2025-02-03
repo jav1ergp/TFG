@@ -13,11 +13,11 @@ logging.getLogger('open_image_models.detection.pipeline.license_plate').setLevel
 logging.getLogger('ultralytics').setLevel(logging.CRITICAL)
 
 def handle_car(frame):  # logica para detectar matricula y meterla en la bd un coche
-    license_plate_text, confidence, date_in = alpr_service.detect_plate(frame)
-    print("BBBBBBBBBB", license_plate_text, confidence)
+    plate = alpr_service.detect_plate(frame)
     
-    if license_plate_text:
-        db_service.handle_plate(license_plate_text, confidence, date_in)
+    if plate is not None:
+        print("BBBBBBBBBB", plate.license_plate_text, plate.confidence)
+        db_service.handle_plate(plate)
 
 def handle_motorcycle(frame): # logica para detectar matricula y meter en la bd moto
     return True
