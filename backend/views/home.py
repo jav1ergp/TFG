@@ -1,9 +1,10 @@
 import flet as ft
 
 def home(page: ft.Page):
-    print("Página de inicio")
     return ft.View(
-        ft.Container(
-            ft.Text("Bienvenido a la página de inicio"),
-        )
+        "/home",
+        [
+            ft.Text("Bienvenido al Parking", size=20),
+            ft.ElevatedButton("Ver Estado del Parking", on_click=lambda _: page.go("/parking"))
+        ]
     )

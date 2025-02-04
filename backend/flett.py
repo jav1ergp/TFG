@@ -3,10 +3,9 @@ from views.admin import admin
 from services.db_users import is_admin
 from views.login import login
 from views.register import register
-from views.home import home  # Importa la vista de home
-#from views.admin_page import admin  # Importa la vista de la página de admin
+from views.home import home
+from views.parking import parking  # Nueva importación
 
-# Suponiendo que el email del usuario está almacenado en una variable global
 current_user_email = None
 
 def main(page: ft.Page):
@@ -25,11 +24,13 @@ def main(page: ft.Page):
         elif page.route == "/home":
             page.views.append(home(page))
         elif page.route == "/admin":
-            page.views.append(admin(page))  # Página solo accesible para admin
+            page.views.append(admin(page))
+        elif page.route == "/parking":  # Nueva ruta para la vista del parking
+            page.views.append(parking(page))
 
         page.update()
 
     page.on_route_change = route_change
-    page.go("/login")  # Establece la ruta inicial
+    page.go("/login")  # Ruta inicial
 
 ft.app(target=main)

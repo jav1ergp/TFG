@@ -58,23 +58,6 @@ def time_check(date_in):
     time_difference = (current_time - date_in).total_seconds() / 60
     return time_difference
 
- 
-def repeited_plate(license_plate_text):
-    existing_plate = collection.find_one({"plate": license_plate_text})
-    
-    if existing_plate:
-        return True
-    else:
-        return False
-
-def check_date_in_db(license_plate_text):
-    plate_record = collection.find_one({"plate": license_plate_text})
-    
-    if plate_record and plate_record.get("date_out") is not None:
-        return True
-    
-    return False
-
 def get_latest_plate_record(license_plate_text):
     return collection.find_one(
         {"plate": license_plate_text},
