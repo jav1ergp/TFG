@@ -1,9 +1,10 @@
 class Plate:
-    def __init__(self, license_plate_text, confidence, date_in):
+    def __init__(self, license_plate_text, confidence, date_in, zona):
         self.license_plate_text = license_plate_text
         self.confidence = confidence
         self.date_in = date_in
-
+        self.zona = zona
+        
     @staticmethod
     def es_matricula_valida(matricula):
         """Comprueba si el formato de la matrícula es válido (moderno o antiguo)."""

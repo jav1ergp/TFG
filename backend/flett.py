@@ -4,7 +4,8 @@ from services.db_users import is_admin
 from views.login import login
 from views.register import register
 from views.home import home
-from views.parking import parking  # Nueva importación
+from views.parking import parking
+from views.logs import logs
 
 current_user_email = None
 
@@ -27,6 +28,8 @@ def main(page: ft.Page):
             page.views.append(admin(page))
         elif page.route == "/parking":  # Nueva ruta para la vista del parking
             page.views.append(parking(page))
+        elif page.route == "/logs":
+            page.views.append(logs(page))
 
         page.update()
 

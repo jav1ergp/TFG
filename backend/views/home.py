@@ -5,6 +5,7 @@ def home(page: ft.Page):
         "/home",
         [
             ft.Text("Bienvenido al Parking", size=20),
-            ft.ElevatedButton("Ver Estado del Parking", on_click=lambda _: page.go("/parking"))
+            ft.ElevatedButton("Ver Estado del Parking", on_click=lambda _: page.go("/parking")),
+            ft.ElevatedButton("Ver Logs", on_click=lambda _: page.go("/logs"))
         ]
     )

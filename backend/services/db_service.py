@@ -15,7 +15,7 @@ def save_plate_to_db(plate):
     }
     collection.insert_one(plate_data)
         
-def handle_plate(plate):
+def handle_plate(plate):    # Manejar las zonas de las matriculas
     # Buscar el registro más reciente de la matrícula
     print(f"Matrícula detectada: {plate.license_plate_text}")
     latest_record = get_latest_plate_record(plate.license_plate_text)
@@ -69,3 +69,4 @@ def update_plate_date_out(record_id, date_out):
         {"_id": record_id},
         {"$set": {"date_out": date_out}}
     )
+

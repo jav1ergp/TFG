@@ -1,10 +1,36 @@
 import flet as ft
+import requests
+import time
+
+API_URL = "http://127.0.0.1:5000/api/plazas"
 
 def parking(page: ft.Page):
     def parking_view():
-        plazas_zona_entrada = ft.Text("10", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
-        plazas_zona_salida = ft.Text("15", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+        plazas_zona_entrada = ft.Text("Cargando...", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+        plazas_zona_salida = ft.Text("Cargando...", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
 
+        def update_plazas():
+            """Consulta la API y actualiza las plazas en la UI"""
+            try:
+                response = requests.get(API_URL)
+                if response.status_code == 200:
+                    data = response.json()
+                    plazas_zona_entrada.value = str(data["entrada"])
+                    plazas_zona_salida.value = str(data["salida"])
+                    page.update()
+            except Exception as e:
+                plazas_zona_entrada.value = "Error"
+                plazas_zona_salida.value = "Error"
+                page.update()
+
+        def auto_update():
+            """Actualiza las plazas automáticamente cada 5 segundos"""
+            while True:
+                update_plazas()
+                time.sleep(5)
+
+        page.run_thread(auto_update)
+                    
         # entrada
         zona_entrada = ft.Container(
             content=ft.Column([
