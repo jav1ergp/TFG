@@ -12,22 +12,30 @@ logging.getLogger('open_image_models.detection.core.yolo_v9.inference').setLevel
 logging.getLogger('open_image_models.detection.pipeline.license_plate').setLevel(logging.WARNING)
 logging.getLogger('ultralytics').setLevel(logging.CRITICAL)
 
-def handle_car(frame):  # logica para detectar matricula y meterla en la bd un coche
+def handle_car(frame, source):  # logica para detectar matricula y meterla en la bd un coche
     plate = alpr_service.detect_plate(frame)
     
     if plate is not None:
         print("BBBBBBBBBB", plate.license_plate_text, plate.confidence)
-        db_service.handle_plate(plate)
+        db_service.handle_plate(plate, source)
 
-def handle_motorcycle(frame): # logica para detectar matricula y meter en la bd moto
+def handle_motorcycle(frame, source):  # logica para detectar matricula y meter en la bd moto
     return True
     
-def generate_frames():
+def generate_frames(url_pc, url_portatil):
     model = YOLO('yolov8n.pt')
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-    if not cap.isOpened():
-        print("Error: No se pudo acceder a la cámara.")
-        exit()
+    cap_pc = cv2.VideoCapture(url_pc, cv2.CAP_DSHOW)
+    cap_portatil = cv2.VideoCapture(url_portatil)
+    
+    if not cap_pc.isOpened():
+        print("❌ No se pudo acceder a la cámara pc. Verifica que no esté en uso.")
+        return
+    if not cap_portatil.isOpened():
+        print("❌ No se pudo acceder a la cámara portatil. Verifica que no esté en uso.")
+        return
+    else:
+        print("✅ Cámara abierta correctamente en Flask.")
+
     
     actions = {
         2: handle_car,
@@ -35,35 +43,41 @@ def generate_frames():
     }
     
     while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("Error: No se pudo capturar el frame.")
-            break
-    
-        results = model(frame)
-        filtered_results = []
-        for result in results[0].boxes:
-            if result.cls in [2, 3]: # coche(2) o moto(3)
-                filtered_results.append(result)
+        frames = {
+            "PC": cap_pc.read(),
+            "Portátil": cap_portatil.read()
+        }
+        
+        for source, (ret, frame) in frames.items():
+            if not ret:
+                print(f"Error: No se pudo capturar el frame de la cámara {source}.")
+                continue
+        
+            results = model(frame)
+            filtered_results = []
+            for result in results[0].boxes:
+                if result.cls in [2, 3]: # coche(2) o moto(3)
+                    filtered_results.append(result)
 
-        # Procesar cada detección
-        for result in filtered_results:
-            class_id = int(result.cls)  # ID de la clase detectada
-            confidence = result.conf  # Confianza de la detección (valor entre 0 y 1)
+            # Procesar cada detección
+            for result in filtered_results:
+                class_id = int(result.cls)  # ID de la clase detectada
+                confidence = result.conf  # Confianza de la detección (valor entre 0 y 1)
 
-            if confidence >= 0.8:  # Verificar si la confianza es del 80% o más
-                action = actions.get(class_id)  # Obtener la acción según la clase
-                if action:
-                    action(frame)  # Ejecutar la acción
-                
-                # comprobar matriculas repetidas y fechas
-                # meter en bd
-                # enviar a frontend
+                if confidence >= 0.8:  # Verificar si la confianza es del 80% o más
+                    action = actions.get(class_id)  # Obtener la acción según la clase
+                    if action:
+                        action(frame, source)  # Ejecutar la acción
+                    
+                    # comprobar matriculas repetidas y fechas
+                    # meter en bd
+                    # enviar a frontend
 
-        _, buffer = cv2.imencode('.jpg', frame)
-        frame_bytes = buffer.tobytes()
+            if source == "PC":
+                _, buffer = cv2.imencode('.jpg', frame)
+                frame_bytes = buffer.tobytes()
 
-        yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+                yield (b'--frame\r\n'
+                        b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
 

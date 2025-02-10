@@ -8,7 +8,7 @@ from views.parking import parking
 from views.logs import logs
 
 current_user_email = None
-
+# Definición del método principal con el enrutamiento de la aplicación
 def main(page: ft.Page):
     def route_change(route):
         page.views.clear()
@@ -26,7 +26,7 @@ def main(page: ft.Page):
             page.views.append(home(page))
         elif page.route == "/admin":
             page.views.append(admin(page))
-        elif page.route == "/parking":  # Nueva ruta para la vista del parking
+        elif page.route == "/parking":
             page.views.append(parking(page))
         elif page.route == "/logs":
             page.views.append(logs(page))

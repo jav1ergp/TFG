@@ -11,43 +11,49 @@ def save_plate_to_db(plate):
         "plate": plate.license_plate_text,
         "confidence": plate.confidence,
         "date_in": plate.date_in,
-        "date_out": None
+        "date_out": plate.date_out,
+        "zona": plate.zona
     }
     collection.insert_one(plate_data)
         
-def handle_plate(plate):    # Manejar las zonas de las matriculas
+def handle_plate(plate, source):    # Manejar las zonas de las matriculas
     # Buscar el registro más reciente de la matrícula
     print(f"Matrícula detectada: {plate.license_plate_text}")
     latest_record = get_latest_plate_record(plate.license_plate_text)
 
-    if latest_record:
-        if latest_record["date_out"] is None:
-            # Calcular el tiempo transcurrido desde date_in
-            time_elapsed = time_check(latest_record["date_in"])
-            print(f"Tiempo transcurrido desde la última entrada: {time_elapsed} minutos")
-
-            if time_elapsed >= 3:
-                # Actualizar date_out y cerrar el registro
-                update_plate_date_out(latest_record["_id"], plate.date_in)
-                print(f"Date_out actualizado para la matrícula: {plate.license_plate_text}")
+    if source == "PC":
+        # Por el PC, es una entrada
+        if latest_record:
+            # Si la matrícula ya está registrada y no ha salido
+            if latest_record["date_out"] is None:
+                print(f"La matrícula {plate.license_plate_text} ya está dentro.")
             else:
-                print(f"No se ha alcanzado el tiempo mínimo para actualizar el registro de: {plate.license_plate_text}")
+                print(f"La matrícula {plate.license_plate_text} ya salió, se está registrando de nuevo.")
+                save_plate_to_db(plate)  # Guardar como nueva entrada
         else:
-            # Calcular el tiempo transcurrido desde el último date_out
-            time_elapsed = time_check(latest_record["date_out"])
-            print(f"Tiempo transcurrido desde el último date_out: {time_elapsed} minutos")
-
-            if time_elapsed >= 3:
-                # Crear un nuevo registro si ha pasado suficiente tiempo desde el último date_out
-                save_plate_to_db(plate)
-                print(f"Nuevo registro creado para la matrícula: {plate.license_plate_text}")
+            # Si no hay registros previos, se registra la entrada
+            save_plate_to_db(plate)
+            print(f"Nuevo registro de entrada para la matrícula: {plate.license_plate_text}")
+        
+    elif source == "Portátil":
+         # Por el portátil, es una salida
+        if latest_record:
+            # Si la matrícula está registrada y no ha salido aún
+            if latest_record["date_out"] is None:
+                time_elapsed = time_check(latest_record["date_in"])
+                print(f"Tiempo transcurrido desde la última entrada: {time_elapsed} minutos")
+                if time_elapsed >= 1:
+                    # Actualizar date_out y cambiar la zona a "fuera"
+                    update_plate_date_out(latest_record["_id"], plate.date_in)
+                    print(f"Date_out actualizado para la matrícula {plate.license_plate_text}")
+                else:
+                    print(f"No se ha alcanzado el tiempo mínimo para actualizar la salida de: {plate.license_plate_text}")
             else:
-                print(f"No se ha alcanzado el tiempo mínimo para crear un nuevo registro de: {plate.license_plate_text}")
-    else:
-        # Si no hay registros previos, crear un nuevo registro
-        save_plate_to_db(plate)
-        print(f"Nuevo registro creado para una matrícula no registrada: {plate.license_plate_text}")
-
+                print(f"La matrícula {plate.license_plate_text} ya ha salido.")
+        else:
+            # Si no hay registro previo en la base de datos (no está registrada), es un error
+            print(f"Error: La matrícula {plate.license_plate_text} no está registrada, no puede salir.")
+            
 
 def time_check(date_in):
     current_time = datetime.now()
@@ -67,6 +73,6 @@ def get_latest_plate_record(license_plate_text):
 def update_plate_date_out(record_id, date_out):
     collection.update_one(
         {"_id": record_id},
-        {"$set": {"date_out": date_out}}
+        {"$set": {"zona": "fuera", "date_out": date_out}}
     )
 

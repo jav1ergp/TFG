@@ -1,8 +1,9 @@
 class Plate:
-    def __init__(self, license_plate_text, confidence, date_in, zona):
+    def __init__(self, license_plate_text, confidence, date_in, zona, date_out=None):
         self.license_plate_text = license_plate_text
         self.confidence = confidence
         self.date_in = date_in
+        self.date_out = date_out
         self.zona = zona
         
     @staticmethod

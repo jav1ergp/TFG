@@ -1,0 +1,126 @@
+import flet as ft
+import base64
+import cv2
+import numpy as np
+from io import BytesIO
+from PIL import Image as pil_image
+
+cap = cv2.VideoCapture("http://localhost:5000/car_detection") 
+
+# Función para convertir un frame de la cámara a base64
+def frame_to_base64(frame):
+    _, im_arr = cv2.imencode('.png', frame)
+    im_b64 = base64.b64encode(im_arr)
+    return im_b64.decode("utf-8")
+
+class SecurityCamera(ft.UserControl):
+    def __init__(self):
+        super().__init__()
+
+    def did_mount(self):
+        self.update_camera_feed()
+
+    def update_camera_feed(self):
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("No se puede capturar el frame")
+                break
+
+            # Convierte el frame en base64 para ser mostrado en Flet
+            im_b64 = frame_to_base64(frame)
+            self.img.src_base64 = im_b64
+            self.update()
+
+    def build(self):
+        # Componente de imagen para mostrar el feed de la cámara
+        self.img = ft.Image(
+            border_radius=ft.border_radius.all(20)
+        )
+
+        # Texto para mostrar el estado de la matrícula
+        self.plate_status = ft.Text(
+            value="Esperando matrícula...",
+            size=20, weight="bold", color=ft.colors.RED
+        )
+
+        return ft.Column([
+            self.img,
+            self.plate_status,
+        ])
+
+def video_stream(page: ft.Page):
+    return ft.Container(
+        margin=ft.margin.all(10),
+        content=ft.Column([
+            SecurityCamera(),
+        ])
+    )
+    
+    
+    
+#AAAAAAAAAAAAAAAAAAAA
+import flet as ft
+import base64
+import requests
+import numpy as np
+import cv2
+
+# URL de tu servidor que transmite el video de detección de matrículas
+cap_url = "http://localhost:5000/car_detection"  # URL del servidor que genera el stream de video
+
+class SecurityCamera(ft.UserControl):
+    def __init__(self):
+        super().__init__()
+
+    def did_mount(self):
+        self.update_camera_feed()
+
+    def update_camera_feed(self):
+        # Usamos requests para obtener el flujo de video desde el servidor
+        while True:
+            try:
+                # Realizamos la solicitud GET al servidor para obtener una imagen
+                response = requests.get(cap_url, stream=True)
+                if response.status_code == 200:
+                    # Convertimos el contenido recibido en un array numpy (frame)
+                    img_arr = np.asarray(bytearray(response.content), dtype=np.uint8)
+                    frame = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+
+                    _, im_arr = cv2.imencode('.png', frame)
+                    im_b64 = base64.b64encode(im_arr).decode("utf-8")
+                    # Actualizamos la imagen en el componente
+                    self.img.src_base64 = im_b64
+                    self.update()
+
+            except Exception as e:
+                print(f"Error al recibir imagen: {e}")
+                break
+
+    def build(self):
+        # Componente de imagen para mostrar el feed de la cámara
+        self.img = ft.Image(
+            border_radius=ft.border_radius.all(20),
+            src_base64="",
+            width=640,  # Ajusta el tamaño de la imagen si es necesario
+            height=360,  # Ajusta el tamaño de la imagen si es necesario
+        )
+
+        # Texto para mostrar el estado de la matrícula
+        self.plate_status = ft.Text(
+            value="Esperando matrícula...",
+            size=20, weight="bold", color=ft.colors.RED
+        )
+
+        return ft.Column([
+            self.img,
+            self.plate_status,
+        ])
+
+def video_stream(page: ft.Page):
+    return ft.Container(
+        margin=ft.margin.all(10),
+        content=ft.Column([
+            SecurityCamera(),
+        ])
+    )
