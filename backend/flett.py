@@ -4,6 +4,7 @@ from services.db_users import is_admin
 from views.login import login
 from views.register import register
 from views.home import home
+from views.frontv2 import parking_page
 from views.parking import parking
 from views.logs import logs
 
@@ -27,10 +28,11 @@ def main(page: ft.Page):
         elif page.route == "/admin":
             page.views.append(admin(page))
         elif page.route == "/parking":
-            page.views.append(parking(page))
+            page.views.append(parking_page(page))
         elif page.route == "/logs":
             page.views.append(logs(page))
-
+        elif page.route == "/parking2":
+            page.views.append(parking(page))
         page.update()
 
     page.on_route_change = route_change

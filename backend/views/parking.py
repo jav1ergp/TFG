@@ -16,7 +16,7 @@ def parking(page: ft.Page):
                 if response.status_code == 200:
                     data = response.json()
                     plazas_zona_entrada.value = str(data["entrada"])
-                    plazas_zona_salida.value = str(data["salida"])
+                    plazas_zona_salida.value = str(data["fuera"])
                     page.update()
             except Exception as e:
                 plazas_zona_entrada.value = "Error"
@@ -25,9 +25,9 @@ def parking(page: ft.Page):
 
         def auto_update():
             """Actualiza las plazas automáticamente cada 5 segundos"""
-            while True:
-                update_plazas()
-                time.sleep(5)
+            #while True:
+                #update_plazas()
+                #time.sleep(5)
 
         page.run_thread(auto_update)
                     
@@ -91,7 +91,7 @@ def parking(page: ft.Page):
         return parking_layout
 
     return ft.View(
-        "/parking",
+        "/parking2",
         [parking_view()],
         bgcolor=ft.Colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,

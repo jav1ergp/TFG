@@ -1,8 +1,6 @@
 from ultralytics import YOLO
 import cv2
 import logging
-import threading
-import state
 from . import alpr_service
 from . import db_service
 
