@@ -25,9 +25,9 @@ def parking(page: ft.Page):
 
         def auto_update():
             """Actualiza las plazas automáticamente cada 5 segundos"""
-            #while True:
-                #update_plazas()
-                #time.sleep(5)
+            while True:
+                update_plazas()
+                time.sleep(5)
 
         page.run_thread(auto_update)
                     

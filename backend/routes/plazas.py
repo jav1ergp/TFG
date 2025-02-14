@@ -10,10 +10,6 @@ parking_bp = Blueprint("parking", __name__)
 TOTAL_PLAZAS_ENTRADA = 10 # Plazas total 
 TOTAL_PLAZAS_SALIDA = 15 # Plazas total
 
-def contar_coches_en_zona(zona):
-    """Cuenta cuántos coches están actualmente en la zona (sin date_out)."""
-    return collection.count_documents({"zona": zona, "date_out": None})
-
 @parking_bp.route("/api/plazas", methods=["GET"])
 def parking_status():
     # Contar cuántos coches hay en cada zona según el campo "zona"
