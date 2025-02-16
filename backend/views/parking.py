@@ -1,41 +1,22 @@
 import flet as ft
-import requests
-import time
+from aiohttp import ClientSession
+import asyncio
 
 API_URL = "http://127.0.0.1:5000/api/plazas"
 
-def parking(page: ft.Page):
-    def parking_view():
-        plazas_zona_entrada = ft.Text("Cargando...", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
-        plazas_zona_salida = ft.Text("Cargando...", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+class ParkingView(ft.UserControl):
+    def __init__(self):
+        super().__init__()
+        self.plazas_zona_entrada = ft.Text("Cargando...", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+        self.plazas_zona_salida = ft.Text("Cargando...", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+        self.task = None  # Tarea de actualización
 
-        def update_plazas():
-            """Consulta la API y actualiza las plazas en la UI"""
-            try:
-                response = requests.get(API_URL)
-                if response.status_code == 200:
-                    data = response.json()
-                    plazas_zona_entrada.value = str(data["entrada"])
-                    plazas_zona_salida.value = str(data["fuera"])
-                    page.update()
-            except Exception as e:
-                plazas_zona_entrada.value = "Error"
-                plazas_zona_salida.value = "Error"
-                page.update()
-
-        def auto_update():
-            """Actualiza las plazas automáticamente cada 5 segundos"""
-            while True:
-                update_plazas()
-                time.sleep(5)
-
-        page.run_thread(auto_update)
-                    
-        # entrada
+    def build(self):
+        # Entrada
         zona_entrada = ft.Container(
             content=ft.Column([
                 ft.Text("Entrada", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                plazas_zona_entrada
+                self.plazas_zona_entrada
             ], alignment=ft.MainAxisAlignment.CENTER),
             width=100,
             height=250,
@@ -44,11 +25,11 @@ def parking(page: ft.Page):
             border_radius=ft.border_radius.only(bottom_right=10, bottom_left=10)
         )
 
-        # salida
+        # Salida
         zona_salida = ft.Container(
             content=ft.Column([
                 ft.Text("Salida", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                plazas_zona_salida
+                self.plazas_zona_salida
             ], alignment=ft.MainAxisAlignment.CENTER),
             width=250,
             height=100,
@@ -57,7 +38,7 @@ def parking(page: ft.Page):
             border_radius=ft.border_radius.only(bottom_right=10, top_right=10)
         )
 
-        # curva
+        # Curva
         curva = ft.Container(
             width=100,
             height=100,
@@ -65,19 +46,24 @@ def parking(page: ft.Page):
             border_radius=ft.border_radius.only(top_left=100)
         )
 
-        # home
-        btn_back = ft.ElevatedButton("Volver", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
+        # Back
+        btn_back = ft.ElevatedButton(
+            "Volver",
+            color=ft.colors.WHITE,
+            width=100,
+            bgcolor=ft.colors.LIGHT_BLUE,
+            on_click=lambda _: self.page.go("/home")
+        )
 
-        # layout
-        parking_layout = ft.Column(
+        # Layout principal
+        return ft.Column(
             [
-                ft.Text("Estado del Parking", size=20, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+                ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
                 ft.Stack(
                     [
                         ft.Container(content=zona_entrada, margin=ft.margin.only(top=100)),
                         ft.Container(content=curva, margin=ft.margin.only(left=0, top=0)),
                         ft.Container(content=zona_salida, margin=ft.margin.only(left=100, top=0))
-                        
                     ],
                     width=350,
                     height=350
@@ -88,12 +74,36 @@ def parking(page: ft.Page):
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
         )
 
-        return parking_layout
+    async def update_parking_status(self):
+        while True:
+            try:
+                async with ClientSession() as session:
+                    async with session.get(API_URL) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            self.plazas_zona_entrada.value = data.get("entrada", "Error")
+                            self.plazas_zona_salida.value = data.get("fuera", "Error")
+                            self.plazas_zona_entrada.update()
+                            self.plazas_zona_salida.update()
+            except Exception as e:
+                print("Error al obtener datos de la API:", e)
+            await asyncio.sleep(5)
 
+    def did_mount(self):
+        self.task = self.page.run_task(self.update_parking_status)
+
+    def will_unmount(self):
+        self.task.cancel()
+        self.task = None
+
+def parking(page: ft.Page):
+    parking_view = ParkingView()
+    page.add(parking_view)
+    
     return ft.View(
-        "/parking2",
-        [parking_view()],
-        bgcolor=ft.Colors.WHITE,
+        "/parking",
+        controls=[parking_view],
+        bgcolor=ft.colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         vertical_alignment=ft.MainAxisAlignment.CENTER
     )

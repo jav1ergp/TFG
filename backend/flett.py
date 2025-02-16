@@ -6,7 +6,7 @@ from views.register import register
 from views.home import home
 from views.frontv2 import parking_page
 from views.parking import parking
-from views.logs import data
+from backend.views.data import data
 
 current_user_email = None
 # Definición del método principal con el enrutamiento de la aplicación

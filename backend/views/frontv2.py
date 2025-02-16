@@ -1,5 +1,5 @@
 import flet as ft
-import requests
+from aiohttp import ClientSession
 import asyncio
 
 API_URL = "http://127.0.0.1:5000/api/plazas"
@@ -26,11 +26,10 @@ class ParkingZone(ft.UserControl):
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 width=250,
                 padding=20,
-            ),
-            elevation=50,
+            )
         )
 
-    def update_status(self, available: int): # Actualiza el estado de la zona
+    def update_status(self, available): # Actualiza el estado de la zona
         self.available_slots = available 
         self.status.value = f"{self.available_slots}/{self.total_slots}" 
         self.progress.value = self.available_slots / self.total_slots 
@@ -42,54 +41,56 @@ class ParkingView(ft.UserControl):
         self.zone_a = ParkingZone("Entrada", 13)
         self.zone_b = ParkingZone("Salida", 150)
         self.task = None  # Tarea de actualización
-
     
     def build(self):
-        window_width = self.page.width
-        margin_value = int(window_width * 0.08)
-        return ft.Container(
-            content=ft.Column([
-                ft.Row([self.zone_a, self.zone_b], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-            ]),
-            margin=margin_value
+        btn_back = ft.ElevatedButton(
+            "Volver",
+            color=ft.colors.WHITE,
+            width=100,
+            bgcolor=ft.colors.LIGHT_BLUE,
+            on_click=lambda _: self.page.go("/home")
         )
+        
+        return ft.Column(
+            controls=[
+                ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+                ft.Row([self.zone_a, self.zone_b], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+                btn_back
+            ], 
+            alignment=ft.MainAxisAlignment.CENTER, 
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        )
+        
 
     async def update_parking_status(self):
         while True:
             try:
-                response = requests.get(API_URL)
-                if response.status_code == 200:
-                    data = response.json()
-                    self.zone_a.update_status(data.get("entrada"))
-                    self.zone_b.update_status(data.get("fuera"))
+                async with ClientSession() as session:
+                    async with session.get(API_URL) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            self.zone_a.update_status(data.get("entrada"))
+                            self.zone_b.update_status(data.get("fuera"))
             except Exception as e:
                 print("Error al obtener datos de la API:", e)
-            await asyncio.sleep(5)  # Actualiza cada 5 segundos
+            await asyncio.sleep(5) 
 
-    def did_mount(self):
+    def did_mount(self): # Se ejecuta al cargar la página
         self.task = self.page.run_task(self.update_parking_status) # Inicia la tarea de actualización
 
     def will_unmount(self): # Se ejecuta al salir de la página
-        if self.task:
-            self.task.cancel()  # Cancela la tarea al salir
-            self.task = None  # Limpia la referencia
+        self.task.cancel()  # Cancela la tarea al salir
+        self.task = None  # Limpia la referencia
+        
 
 def parking_page(page: ft.Page):
     parking_view = ParkingView()
     page.add(parking_view)
     
-    btn_back = ft.ElevatedButton("Volver", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
-    
     return ft.View(
-        "/parking",
+        "/parking2",
+        controls=[parking_view],
         bgcolor=ft.Colors.WHITE,
-        controls=[
-            ft.Column([
-                ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
-                parking_view,
-                btn_back
-            ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-        ],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         vertical_alignment=ft.MainAxisAlignment.CENTER
     )
