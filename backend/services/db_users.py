@@ -32,7 +32,13 @@ def verify_login(email, password):
 def is_admin(email):
     """Verifica si el usuario tiene rol de administrador."""
     user_data = collection.find_one({"email": email})
-    return user_data is not None and user_data.get("admin", False)
+    
+    if user_data is None:
+        return False
+    
+    is_user_admin = user_data.get("admin", False)
+    
+    return is_user_admin
 
 def save_user_to_db(user):
     user_data = {

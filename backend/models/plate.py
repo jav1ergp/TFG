@@ -1,3 +1,10 @@
+from pymongo import MongoClient
+from models.log import Log
+
+client = MongoClient("mongodb://localhost:27017/")
+db = client['parking']
+collection = db['vehicles']
+
 class Plate:
     def __init__(self, license_plate_text, confidence, date_in, zona, date_out=None):
         self.license_plate_text = license_plate_text
@@ -5,7 +12,31 @@ class Plate:
         self.date_in = date_in
         self.date_out = date_out
         self.zona = zona
+    
+    @classmethod
+    def save_plate_to_db(cls, plate):
+        # Guardar los datos de la matrícula en la base de datos
+        plate_data = {
+            "plate": plate.license_plate_text,
+            "confidence": plate.confidence,
+            "date_in": plate.date_in,
+            "date_out": plate.date_out,
+            "zona": plate.zona
+        }
+        collection.insert_one(plate_data)
         
+        log = Log(
+            action="Entrada",
+            description=f"El vehículo con matrícula {plate.license_plate_text} entró a la zona {plate.zona} a las {plate.date_in}",
+            plate=plate.license_plate_text,
+            zone=plate.zona,
+            time_in=plate.date_in
+        )
+        
+        log.save_log(log)
+        
+        return plate
+    
     @staticmethod
     def es_matricula_valida(matricula):
         """Comprueba si el formato de la matrícula es válido (moderno o antiguo)."""

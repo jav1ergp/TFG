@@ -6,7 +6,8 @@ from views.register import register
 from views.home import home
 from views.frontv2 import parking_page
 from views.parking import parking
-from backend.views.data import data
+from views.data import data
+from views.logs import logs
 
 current_user_email = None
 # Definición del método principal con el enrutamiento de la aplicación
@@ -14,7 +15,6 @@ def main(page: ft.Page):
     def route_change(route):
         page.views.clear()
 
-        # Verificar si el usuario es administrador antes de permitir el acceso a la página de administrador
         if route == "/admin" and not is_admin(current_user_email):
             page.go("/home")  # Redirigir a home si no es admin
 
@@ -33,6 +33,8 @@ def main(page: ft.Page):
             page.views.append(data(page))
         elif page.route == "/parking2":
             page.views.append(parking(page))
+        elif page.route == "/logs":
+            page.views.append(logs(page))
         page.update()
 
     page.on_route_change = route_change

@@ -1,7 +1,7 @@
 import flet as ft
 import requests
 
-API_URL = "http://127.0.0.1:5000/api/logs"
+API_URL = "http://127.0.0.1:5000/api/data"
 
 def data(page: ft.Page):
     # Lista para almacenar los registros
