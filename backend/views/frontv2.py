@@ -2,7 +2,7 @@ import flet as ft
 from aiohttp import ClientSession
 import asyncio
 
-API_URL = "http://127.0.0.1:5000/api/plazas"
+API_URL = "http://127.0.0.1:5000/api/spots"
 
 class ParkingZone(ft.UserControl):
     def __init__(self, name, total_slots):
@@ -70,7 +70,7 @@ class ParkingView(ft.UserControl):
                         if response.status == 200:
                             data = await response.json()
                             self.zone_a.update_status(data.get("entrada"))
-                            self.zone_b.update_status(data.get("fuera"))
+                            self.zone_b.update_status(data.get("salida"))
             except Exception as e:
                 print("Error al obtener datos de la API:", e)
             await asyncio.sleep(5) 

@@ -18,7 +18,7 @@ def logs(page: ft.Page):
                     ft.DataCell(ft.Text(log.get("description"), color=ft.colors.WHITE)),
                     ft.DataCell(ft.Text(log.get("plate"), color=ft.colors.WHITE)),
                     ft.DataCell(ft.Text(log.get("zone"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("time_in"), color=ft.colors.WHITE)),  
+                    ft.DataCell(ft.Text(log.get("timestamp"), color=ft.colors.WHITE)),  
                 ]
             ))
         page.update()
@@ -53,7 +53,7 @@ def logs(page: ft.Page):
             ft.DataColumn(ft.Text("Descripción", color=ft.colors.WHITE)),
             ft.DataColumn(ft.Text("Matrícula", color=ft.colors.WHITE)),
             ft.DataColumn(ft.Text("Zona", color=ft.colors.WHITE)),
-            ft.DataColumn(ft.Text("Hora de Entrada", color=ft.colors.WHITE)),
+            ft.DataColumn(ft.Text("Hora", color=ft.colors.WHITE)),
         ],
         rows=[]
     )

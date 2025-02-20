@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
-from datetime import datetime
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client['parking']
@@ -18,14 +17,14 @@ def get_logs():
 
     logs_list = [
         {
-            "id": str(log["_id"]),
+            "id": str(log["_id"]), #test
             "action": log["action"],
             "description": log["description"],
             "plate": log["plate"],
             "zone": log["zone"],
-            "date_in": log["date_in"].isoformat(),
-            "date_out": log["date_out"].isoformat(),
-            "timestamp": log["timestamp"].isoformat()
+            "date_in": log["date_in"],
+            "date_out": log.get("date_out"),
+            "timestamp": log["timestamp"]
         }
         for log in logs
     ]

@@ -15,7 +15,6 @@ class Plate:
     
     @classmethod
     def save_plate_to_db(cls, plate):
-        # Guardar los datos de la matrícula en la base de datos
         plate_data = {
             "plate": plate.license_plate_text,
             "confidence": plate.confidence,
@@ -23,14 +22,15 @@ class Plate:
             "date_out": plate.date_out,
             "zona": plate.zona
         }
+        
         collection.insert_one(plate_data)
         
         log = Log(
             action="Entrada",
-            description=f"El vehículo con matrícula {plate.license_plate_text} entró a la zona {plate.zona} a las {plate.date_in}",
+            description=f"El vehículo con matrícula {plate.license_plate_text} entró al parking a las {plate.date_in}",
             plate=plate.license_plate_text,
             zone=plate.zona,
-            time_in=plate.date_in
+            date_in=plate.date_in
         )
         
         log.save_log(log)
@@ -38,8 +38,7 @@ class Plate:
         return plate
     
     @staticmethod
-    def es_matricula_valida(matricula):
-        """Comprueba si el formato de la matrícula es válido (moderno o antiguo)."""
+    def is_valid_plate(matricula):
         matricula = matricula.replace(" ", "").replace("-", "")  # Elimina espacios y guiones
         
         # Matrícula moderna: 4 dígitos + 3 letras (ejemplo: 1234XYZ)

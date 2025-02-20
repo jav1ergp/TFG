@@ -2,7 +2,7 @@ import flet as ft
 from aiohttp import ClientSession
 import asyncio
 
-API_URL = "http://127.0.0.1:5000/api/plazas"
+API_URL = "http://127.0.0.1:5000/api/spots"
 
 class ParkingView(ft.UserControl):
     def __init__(self):
@@ -82,7 +82,7 @@ class ParkingView(ft.UserControl):
                         if response.status == 200:
                             data = await response.json()
                             self.plazas_zona_entrada.value = data.get("entrada", "Error")
-                            self.plazas_zona_salida.value = data.get("fuera", "Error")
+                            self.plazas_zona_salida.value = data.get("salida", "Error")
                             self.plazas_zona_entrada.update()
                             self.plazas_zona_salida.update()
             except Exception as e:

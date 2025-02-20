@@ -14,23 +14,25 @@ def handle_car(frame, source):  # logica para detectar matricula y meterla en la
     plate = alpr_service.detect_plate(frame)
     
     if plate is not None:
-        print("BBBBBBBBBB", plate.license_plate_text, plate.confidence)
         db_service.handle_plate(plate, source)
 
 def handle_motorcycle(frame, source):  # logica para detectar matricula y meter en la bd moto
     return True
     
-def generate_frames(url_pc, url_portatil):
+def generate_frames(url_pc, url_laptop, url_movil):
     model = YOLO('yolov8n.pt')
     cap_pc = cv2.VideoCapture(url_pc, cv2.CAP_DSHOW)
-    cap_portatil = cv2.VideoCapture(url_portatil)
+    cap_laptop = cv2.VideoCapture(url_laptop)
+    cap_movil = cv2.VideoCapture(url_movil)
     
     if not cap_pc.isOpened():
         print("❌ No se pudo acceder a la cámara pc. Verifica que no esté en uso.")
         return
-    if not cap_portatil.isOpened():
+    if not cap_laptop.isOpened():
         print("❌ No se pudo acceder a la cámara portatil. Verifica que no esté en uso.")
         return
+    if not cap_movil.isOpened():
+        print("❌ No se pudo acceder a la cámara movil. Verifica que no esté en uso.")
     else:
         print("✅ Cámara abierta correctamente en Flask.")
 
@@ -43,7 +45,8 @@ def generate_frames(url_pc, url_portatil):
     while True:
         frames = {
             "PC": cap_pc.read(),
-            "Portátil": cap_portatil.read()
+            "Laptop": cap_laptop.read(),
+            "Movil": cap_movil.read()
         }
         
         for source, (ret, frame) in frames.items():

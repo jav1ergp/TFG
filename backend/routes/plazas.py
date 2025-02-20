@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017/")
@@ -7,19 +7,18 @@ collection = db['vehicles']
 
 parking_bp = Blueprint("parking", __name__)
 
-TOTAL_PLAZAS_ENTRADA = 10 # Plazas total 
-TOTAL_PLAZAS_SALIDA = 15 # Plazas total
+TOTAL_ENTRY_SPOTS = 10
+TOTAL_EXIT_SPOTS = 15
 
-@parking_bp.route("/api/plazas", methods=["GET"])
+@parking_bp.route("/api/spots", methods=["GET"])
 def parking_status():
-    # Contar cuántos coches hay en cada zona según el campo "zona"
-    ocupados_entrada = collection.count_documents({"zona": "entrada"})
-    ocupados_salida = collection.count_documents({"zona": "fuera"})
+    occupied_entry = collection.count_documents({"zone": "entrada"})
+    occupied_exit = collection.count_documents({"zone": "salida"})
 
-    plazas_libres_entrada = TOTAL_PLAZAS_ENTRADA - ocupados_entrada
-    plazas_libres_salida = TOTAL_PLAZAS_SALIDA - ocupados_salida
+    available_entry_spots = TOTAL_ENTRY_SPOTS - occupied_entry
+    available_exit_spots = TOTAL_EXIT_SPOTS - occupied_exit
 
     return jsonify({
-        "entrada": plazas_libres_entrada, 
-        "fuera": plazas_libres_salida
+        "entrada": available_entry_spots, 
+        "salida": available_exit_spots
     })
