@@ -20,6 +20,7 @@ def data(page: ft.Page):
         for log in registros:
             table.rows.append(ft.DataRow(
                 cells=[
+                    ft.DataCell(ft.Text(log.get("vehicle"), color=ft.colors.WHITE)),
                     ft.DataCell(ft.Text(log.get("plate"), color=ft.colors.WHITE)),
                     ft.DataCell(ft.Text(str(log.get("confidence")), color=ft.colors.WHITE)),
                     ft.DataCell(ft.Text(log.get("zona"), color=ft.colors.WHITE)),
@@ -42,7 +43,7 @@ def data(page: ft.Page):
         except requests.RequestException as e:
             print(f"Error al conectar con la API: {e}")
 
-    # Función de ordenamiento
+    # Función de ordenamiento 
     def sort_data(criterio):
         nonlocal registros, sort_states
         # Alterna el estado de ordenamiento
@@ -80,6 +81,7 @@ def data(page: ft.Page):
         bgcolor=ft.colors.BLUE_GREY_700,
         border=ft.border.all(2, ft.colors.BLUE_GREY_200),
         columns=[
+            ft.DataColumn(ft.Text("Vehículo", color=ft.colors.WHITE), on_sort=lambda e: sort_data("vehicle")),
             ft.DataColumn(ft.Text("Matrícula", color=ft.colors.WHITE)),
             ft.DataColumn(ft.Text("Confianza", color=ft.colors.WHITE)),
             ft.DataColumn(ft.Text("Zona", color=ft.colors.WHITE), on_sort=lambda e: sort_data("zona")),
@@ -114,7 +116,7 @@ def data(page: ft.Page):
     # Layout principal
     logs_layout = ft.Column(
         [
-            ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+            ft.Text("Data", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
             ft.Row([search_field, btn_search], alignment=ft.MainAxisAlignment.CENTER, spacing=15),
             table,
             ft.Row([btn_refresh, btn_back], alignment=ft.MainAxisAlignment.CENTER, spacing=20),

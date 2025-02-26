@@ -17,7 +17,7 @@ def get_logs():
 
     logs_list = [
         {
-            "id": str(log["_id"]), #test
+            "id": str(log["_id"]),
             "action": log["action"],
             "description": log["description"],
             "plate": log["plate"],
@@ -29,4 +29,4 @@ def get_logs():
         for log in logs
     ]
 
-    return jsonify(logs_list), 200
+    return jsonify(logs_list)

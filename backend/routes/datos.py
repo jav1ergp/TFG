@@ -17,6 +17,7 @@ def get_data():
             "id": str(log["_id"]),
             "plate": log.get("plate"),
             "confidence": log.get("confidence"),
+            "vehicle": log.get("vehicle"),
             "zona": log.get("zona"),
             "date_in": log.get("date_in"),
             "date_out": log.get("date_out", "Pendiente")

@@ -10,7 +10,7 @@ def init_alpr():
         detector_providers=['CPUExecutionProvider']
     )
 
-def detect_plate(frame):
+def detect_plate(frame, vehicle):
     alpr = init_alpr()
     results = alpr.predict(frame)
 
@@ -21,9 +21,8 @@ def detect_plate(frame):
         date_in = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         zona = "entrada"
         print("AAAAAAAAA", license_plate_text, confidence)
-
-        # Solo crea la instancia si la matrícula es válida y la confianza es alta
-        if Plate.is_valid_plate(license_plate_text) and confidence >= 0.9:
-            return Plate(license_plate_text, confidence, date_in, zona)
+        
+        if Plate.is_valid_plate(license_plate_text) and confidence > 0.9:
+            return Plate(license_plate_text, confidence, vehicle, date_in, zona)
 
     return None

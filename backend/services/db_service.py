@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from datetime import datetime
 from models.plate import Plate
 from models.log import Log
 
@@ -11,8 +12,7 @@ def handle_plate(plate, source):
     print(f"Matricula detectada: {plate.license_plate_text}")
     latest_record = get_latest_plate_record(plate.license_plate_text)
 
-    if source == "PC":
-        # Por el PC, es una entrada
+    if source == "Entrada":
         if latest_record:
             # Si la matrícula ya está registrada y no ha salido
             if latest_record["date_out"] is None:
@@ -23,23 +23,23 @@ def handle_plate(plate, source):
         else:
             # Si no hay registros previos, se registra la entrada
             Plate.save_plate_to_db(plate)
-            print(f"Nuevo registro de entrada para la matricula: {plate.license_plate_text}")
+            print(f"{plate.vehicle} Nuevo registro de entrada para la matricula: {plate.license_plate_text}")
         
-    elif source == "Laptop":
+    elif source == "Salida":
         # Por el portátil, es una salida
         if latest_record:
             # Si la matrícula está registrada y no ha salido aún
-            if latest_record["date_out"] is None:
+            if latest_record["date_out"] is None and latest_record["zona"] == "salida":
                 # Actualizar date_out y cambiar la zona a "fuera"
-                update_plate_date_out(latest_record["_id"], plate.date_in, latest_record["zona"], "fuera")
+                update_plate_date_out(latest_record["_id"], "fuera")
                 print(f"Date_out actualizado para la matricula {plate.license_plate_text}")
             else:
-                print(f"La matricula {plate.license_plate_text} ya ha salido.")
+                print(f"La matricula {plate.license_plate_text} ya ha salido, o no ha entrado.")
         else:
             # Si no hay registro previo en la base de datos (no está registrada), es un error
             print(f"Error: La matricula {plate.license_plate_text} no está registrada, no puede salir.")
             
-    elif source == "Movil":
+    elif source == "Zona":
         # Por el móvil, es un cambio de zona
         if latest_record:
             if latest_record["zona"] == "entrada":
@@ -52,9 +52,11 @@ def handle_plate(plate, source):
             log = Log(
                 action="Error de cambio de zona",
                 description=f"Intento de cambiar zona para matricula no registrada",
-                plate=plate.license_plate_text
+                plate=plate.license_plate_text,
+                zone="Entrada -> Salida",
+                date_in=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             )
-            log.save_log(log)  # Guardar log de error
+            Log.save_log(log)
 
 
 def get_latest_plate_record(license_plate_text):
@@ -64,21 +66,27 @@ def get_latest_plate_record(license_plate_text):
     )
 
 
-def update_plate_date_out(record_id, date_out, new_zone):
+def update_plate_date_out(record_id, new_zone):
     db_plate = collection.find_one({"_id": record_id})
+    date_out = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     collection.update_one({"_id": db_plate["_id"]}, {"$set": {"zona": new_zone, "date_out": date_out}})
     
+    if db_plate["vehicle"] == "coche":
+        vehicle = "El coche"
+    elif db_plate["vehicle"] == "moto":
+        vehicle = "La moto"
+            
     log = Log(
         action="Salida",
-        description=f"El vehículo con matricula {db_plate['plate']} salió del estacionamiento a las {date_out}",
+        description=f"{vehicle} con matricula {db_plate['plate']} salió del estacionamiento a las {date_out}",
         plate=db_plate["plate"],
         zone=new_zone,
         date_in=db_plate["date_in"],
         date_out=date_out
     )
     
-    log.save_log(log)
+    Log.save_log(log)
 
 
 def update_plate_zone(record_id, new_zone):
@@ -86,12 +94,17 @@ def update_plate_zone(record_id, new_zone):
     
     collection.update_one({"_id": db_plate["_id"]}, {"$set": {"zona": new_zone}})
 
+    if db_plate["vehicle"] == "coche":
+        vehicle = "El coche"
+    elif db_plate["vehicle"] == "moto":
+        vehicle = "La moto"
+        
     log = Log(
         action="Cambio de zona",
-        description=f"El vehículo con matricula {db_plate['plate']} cambió de zona de {db_plate['zona']} a {new_zone}",
+        description=f"{vehicle} con matricula {db_plate['plate']} cambió de zona de {db_plate['zona']} a {new_zone}",
         plate=db_plate['plate'],
         zone=f"{db_plate['zona']} -> {new_zone}",
         date_in=db_plate['date_in']
     )
     
-    log.save_log(log)
+    Log.save_log(log)

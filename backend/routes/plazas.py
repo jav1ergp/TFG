@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from pymongo import MongoClient
+from config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client['parking']
@@ -7,18 +8,23 @@ collection = db['vehicles']
 
 parking_bp = Blueprint("parking", __name__)
 
-TOTAL_ENTRY_SPOTS = 10
-TOTAL_EXIT_SPOTS = 15
-
 @parking_bp.route("/api/spots", methods=["GET"])
 def parking_status():
-    occupied_entry = collection.count_documents({"zone": "entrada"})
-    occupied_exit = collection.count_documents({"zone": "salida"})
+    occupied_entry_car = collection.count_documents({"zona": "entrada", "vehicle": "coche"})
+    occupied_exit_car = collection.count_documents({"zona": "salida", "vehicle": "coche"})
+    
+    occupied_entry_moto = collection.count_documents({"zona": "entrada", "vehicle": "moto"})
+    occupied_exit_moto = collection.count_documents({"zona": "salida", "vehicle": "moto"})
 
-    available_entry_spots = TOTAL_ENTRY_SPOTS - occupied_entry
-    available_exit_spots = TOTAL_EXIT_SPOTS - occupied_exit
+    available_entry_spots_car = TOTAL_ENTRY_SPOTS_CAR - occupied_entry_car
+    available_exit_spots_car = TOTAL_EXIT_SPOTS_CAR - occupied_exit_car
+    
+    available_entry_spots_moto = TOTAL_ENTRY_SPOTS_MOTO - occupied_entry_moto
+    available_exit_spots_moto = TOTAL_EXIT_SPOTS_MOTO - occupied_exit_moto
 
     return jsonify({
-        "entrada": available_entry_spots, 
-        "salida": available_exit_spots
+        "entrada_coche": available_entry_spots_car, 
+        "salida_coche": available_exit_spots_car,
+        "entrada_moto": available_entry_spots_moto, 
+        "salida_moto": available_exit_spots_moto
     })

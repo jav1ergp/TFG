@@ -1,45 +1,60 @@
 import flet as ft
 from aiohttp import ClientSession
 import asyncio
+from config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO
+
 
 API_URL = "http://127.0.0.1:5000/api/spots"
 
 class ParkingZone(ft.UserControl):
-    def __init__(self, name, total_slots):
+    def __init__(self, name, total_slots_car, total_slots_moto):
         super().__init__()
         self.name = name
-        self.total_slots = total_slots
-        self.available_slots = total_slots
-        self.status = ft.Text(f"{self.available_slots}/{self.total_slots}", size=24, weight=ft.FontWeight.BOLD) # 13/13
-        self.progress = ft.ProgressBar(width=200, color="green", bgcolor="#eeeeee") # Barra de progreso
-
+        self.total_slots_car = total_slots_car
+        self.available_slots_car = total_slots_car
+        self.total_slots_moto = total_slots_moto
+        self.avaible_slots_moto = total_slots_moto
+        self.status_car = ft.Text(f"{self.available_slots_car}/{self.total_slots_car}", size=24, weight=ft.FontWeight.BOLD) # 13/13
+        self.progress_car = ft.ProgressBar(width=200, color="green", bgcolor="#eeeeee") # Barra de progreso
+        self.status_moto = ft.Text(f"{self.avaible_slots_moto}/{self.total_slots_moto}", size=24, weight=ft.FontWeight.BOLD) # 13/13
+        self.progress_moto = ft.ProgressBar(width=200, color="green", bgcolor="#eeeeee") 
+        
     def build(self):
         self.title = ft.Text(self.name, size=20, weight=ft.FontWeight.BOLD)
         P_icon = ft.Icon(ft.icons.LOCAL_PARKING, size=30)
+        Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=30)
+        Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=30)
         
         return ft.Card(
             content=ft.Container(
                 content=ft.Column([
                     ft.Row([P_icon, self.title]),
-                    self.status,
-                    self.progress
+                    ft.Row([Car_icon, self.status_car]),
+                    self.progress_car,
+                    ft.Row([Moto_icon, self.status_moto]),
+                    self.progress_moto
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                 width=250,
                 padding=20,
             )
         )
 
-    def update_status(self, available): # Actualiza el estado de la zona
-        self.available_slots = available 
-        self.status.value = f"{self.available_slots}/{self.total_slots}" 
-        self.progress.value = self.available_slots / self.total_slots 
+    def update_status(self, available_car, available_moto): # Actualiza el estado de la zona
+        self.available_slots_car = available_car 
+        self.status_car.value = f"{self.available_slots_car}/{self.total_slots_car}" 
+        self.progress_car.value = self.available_slots_car / self.total_slots_car 
+        
+        self.avaible_slots_moto = available_moto
+        self.status_moto.value = f"{self.avaible_slots_moto}/{self.total_slots_moto}"
+        self.progress_moto.value = self.avaible_slots_moto / self.total_slots_moto
+        
         self.update()
 
 class ParkingView(ft.UserControl):
     def __init__(self):
         super().__init__()
-        self.zone_a = ParkingZone("Entrada", 13)
-        self.zone_b = ParkingZone("Salida", 150)
+        self.zone_a = ParkingZone("Zona Entrada", TOTAL_ENTRY_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO)
+        self.zone_b = ParkingZone("Zona Salida", TOTAL_EXIT_SPOTS_CAR, TOTAL_EXIT_SPOTS_MOTO)
         self.task = None  # Tarea de actualización
     
     def build(self):
@@ -69,8 +84,8 @@ class ParkingView(ft.UserControl):
                     async with session.get(API_URL) as response:
                         if response.status == 200:
                             data = await response.json()
-                            self.zone_a.update_status(data.get("entrada"))
-                            self.zone_b.update_status(data.get("salida"))
+                            self.zone_a.update_status(data.get("entrada_coche"), data.get("entrada_moto"))
+                            self.zone_b.update_status(data.get("salida_coche"), data.get("salida_moto"))
             except Exception as e:
                 print("Error al obtener datos de la API:", e)
             await asyncio.sleep(5) 
