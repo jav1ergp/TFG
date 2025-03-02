@@ -4,10 +4,10 @@ import requests
 API_URL = "http://127.0.0.1:5000/api/logs"
 
 def logs(page: ft.Page):
-    registros = []
     current_page = 1  # Página actual
-    items_per_page = 10  # Cantidad de registros por página
-
+    total_pages = 1
+    limit = 10
+    
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
         table.rows.clear()
@@ -25,24 +25,37 @@ def logs(page: ft.Page):
 
     # Función para obtener datos desde la API con paginación
     def update_data(page_num=1):
-        nonlocal registros, current_page
-        current_page = page_num
+        nonlocal current_page, total_pages
+        params = {
+            "page": current_page,
+            "limit": limit,
+        }
 
         try:
-            response = requests.get(f"{API_URL}?page={current_page}&limit={items_per_page}")
+            response = requests.get(API_URL, params=params)
             if response.status_code == 200:
-                registros = response.json()
+                data = response.json()
+                registros = data["data"]
+                total = data["total"]
+                total_pages = (total // limit) + (1 if total % limit > 0 else 0)
                 update_rows(registros)
+                page_counter.value = f"Página {current_page} de {total_pages}"
+                page.update()
         except requests.RequestException as e:
-            print(f"Error al conectar con la API: {e}")
+            print(f"Error: {e}")
 
     # Funciones para la paginación
-    def next_page(_):
-        update_data(current_page + 1)
+    def next_page(e):
+        nonlocal current_page
+        if current_page < total_pages:
+            current_page += 1
+            update_data()
 
-    def prev_page(_):
+    def prev_page(e):
+        nonlocal current_page
         if current_page > 1:
-            update_data(current_page - 1)
+            current_page -= 1
+            update_data()
 
     # Crear la tabla
     table = ft.DataTable(
@@ -68,12 +81,15 @@ def logs(page: ft.Page):
     # Botón para volver
     btn_back = ft.ElevatedButton("Volver", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
 
+    page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.colors.BLACK)
+    
     # Layout principal
     logs_layout = ft.Column(
         [
             ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
             table,
             ft.Row([btn_prev, btn_refresh, btn_next], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+            page_counter,
             btn_back
         ],
         alignment=ft.MainAxisAlignment.CENTER,

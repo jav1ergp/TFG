@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017/")
@@ -9,8 +9,25 @@ data_bp = Blueprint("data", __name__)
 
 @data_bp.route("/api/data", methods=["GET"])
 def get_data():
-    logs = collection.find().sort("date_in", -1)
+    page = int(request.args.get("page", 1))
+    limit = int(request.args.get("limit", 10))
+    sort_field = request.args.get("sort", "date_in")
+    sort_order = int(request.args.get("order", -1))
+    search = request.args.get("search", None)
 
+    skip = (page - 1) * limit
+
+    # Construir filtro de búsqueda
+    query_filter = {}
+    if search:
+        query_filter["plate"] = search 
+        
+    # Ordenación con filtro
+    logs = collection.find(query_filter).sort(sort_field, sort_order).skip(skip).limit(limit)
+    
+    # Contar total de documentos CON filtro
+    total = collection.count_documents(query_filter)
+    
     logs_list = []
     for log in logs:
         logs_list.append({
@@ -23,4 +40,9 @@ def get_data():
             "date_out": log.get("date_out", "Pendiente")
         })
 
-    return jsonify(logs_list)
+    return jsonify({
+        "data": logs_list,
+        "total": total,
+        "page": page,
+        "limit": limit
+    })

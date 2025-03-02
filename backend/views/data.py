@@ -5,16 +5,12 @@ from models.navbar import NavBar
 API_URL = "http://127.0.0.1:5000/api/data"
 
 def data(page: ft.Page):
-    # Lista para almacenar los registros
-    registros = []
-
-    # Diccionario para almacenar el estado de ordenamiento de cada columna
-    sort_states = {
-        "vehicle": "asc",
-        "zona": "asc",
-        "date_in": "asc",
-        "date_out": "asc"
-    }
+    current_page = 1
+    total_pages = 1
+    limit = 10
+    sort_field = "date_in"
+    sort_order = 1
+    search_term = ""
 
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
@@ -34,70 +30,67 @@ def data(page: ft.Page):
         
     # Función para actualizar los datos de la tabla
     def update_data():
-        nonlocal registros # Variable de data() que se modifica en esta función
-        table.rows.clear()
-
+        nonlocal current_page, total_pages
+        params = {
+            "page": current_page,
+            "limit": limit,
+            "sort": sort_field,
+            "order": sort_order,
+            "search": search_term
+        }
+        
         try:
-            response = requests.get(API_URL)
+            response = requests.get(API_URL, params=params)
             if response.status_code == 200:
-                registros = response.json()
+                data = response.json()
+                registros = data["data"]
+                total = data["total"]
+                total_pages = (total // limit) + (1 if total % limit > 0 else 0)
                 update_rows(registros)
+                page_counter.value = f"Página {current_page} de {total_pages}"
+                page.update()
         except requests.RequestException as e:
-            print(f"Error al conectar con la API: {e}")
-
+            print(f"Error: {e}")
+            
     # Función de ordenamiento 
-    def sort_data(criterio):
-        nonlocal registros, sort_states
-        # Alterna el estado de ordenamiento
-        if sort_states[criterio] == "asc":
-            sort_states[criterio] = "desc"
-        else:
-            sort_states[criterio] = "asc"
-
-        # Ordena los registros según el criterio y el estado de ordenamiento
-        tipo_orden = sort_states[criterio] == "asc"
-        if criterio == "date_out":
-            registros = sorted(registros, 
-                key=lambda log: (
-                    log.get("date_out") is not None,  # Primero ordena por presencia de fecha
-                    log.get("date_out") or "0000-00-00"  # Luego ordena por valor de fecha
-                ), 
-                reverse=not tipo_orden
-            )
-        else:
-            registros = sorted(registros, key=lambda log: log.get(criterio), reverse=tipo_orden)
-
-        # Actualiza la tabla con los datos ordenados
-        update_rows(registros)
+    def sort_data(e):
+        nonlocal sort_field, sort_order, current_page
+        sort_field = e.control.data["field"]
+        sort_order = 1 if sort_order == -1 else -1  # Alternar orden
+        current_page = 1
+        update_data()
 
     # Función de búsqueda por matrícula
-    def search_by_plate(event):
-        nonlocal registros
-        search_term = search_field.value.strip().lower()
-        
-        filtered_registros = []
-        
-        if search_term:
-            for log in registros:
-                plate = log.get("plate", "").lower()
-                if search_term in plate:
-                    filtered_registros.append(log) 
-        else:
-            filtered_registros = registros
+    def search_by_plate(e):
+        nonlocal search_term, current_page
+        search_term = search_field.value.strip().upper()
+        current_page = 1
+        update_data()
 
-        update_rows(filtered_registros)
+    def next_page(e):
+        nonlocal current_page
+        if current_page < total_pages:
+            current_page += 1
+            update_data()
 
+    def prev_page(e):
+        nonlocal current_page
+        if current_page > 1:
+            current_page -= 1
+            update_data()
+    
+    
     # Crear la tabla
     table = ft.DataTable(
         bgcolor=ft.colors.BLUE_GREY_700,
         border=ft.border.all(2, ft.colors.BLUE_GREY_200),
         columns=[
-            ft.DataColumn(ft.Text("Vehículo", color=ft.colors.WHITE), on_sort=lambda e: sort_data("vehicle")),
+            ft.DataColumn(ft.Text("Vehículo", color=ft.colors.WHITE), on_sort=lambda e: sort_data(e), data={"field": "vehicle"}),
             ft.DataColumn(ft.Text("Matrícula", color=ft.colors.WHITE)),
             ft.DataColumn(ft.Text("Confianza", color=ft.colors.WHITE)),
-            ft.DataColumn(ft.Text("Zona", color=ft.colors.WHITE), on_sort=lambda e: sort_data("zona")),
-            ft.DataColumn(ft.Text("Fecha Entrada", color=ft.colors.WHITE), on_sort=lambda e: sort_data("date_in")),
-            ft.DataColumn(ft.Text("Fecha Salida", color=ft.colors.WHITE), on_sort=lambda e: sort_data("date_out")),
+            ft.DataColumn(ft.Text("Zona", color=ft.colors.WHITE), on_sort=lambda e: sort_data(e), data={"field": "zona"}),
+            ft.DataColumn(ft.Text("Fecha Entrada", color=ft.colors.WHITE), on_sort=lambda e: sort_data(e), data={"field": "date_in"}),
+            ft.DataColumn(ft.Text("Fecha Salida", color=ft.colors.WHITE), on_sort=lambda e: sort_data(e), data={"field": "date_out"})
         ],
         rows=[]
     )
@@ -121,16 +114,24 @@ def data(page: ft.Page):
     # Botón para actualizar los datos
     btn_refresh = ft.ElevatedButton("Actualizar", color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, on_click=lambda _: update_data())
 
+    # Botones de paginación
+    btn_prev = ft.ElevatedButton("Anterior", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
+    btn_next = ft.ElevatedButton("Siguiente", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=next_page)
+
     # Botón para volver
     btn_back = ft.ElevatedButton("Volver", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
 
+    page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.colors.BLACK)
     # Layout principal
     logs_layout = ft.Column(
         [
             ft.Text("Data", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
             ft.Row([search_field, btn_search], alignment=ft.MainAxisAlignment.CENTER, spacing=15),
             table,
-            ft.Row([btn_refresh, btn_back], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+            ft.Row([btn_prev, btn_refresh, btn_next], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+            page_counter,
+            btn_back
+
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
