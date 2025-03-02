@@ -1,5 +1,6 @@
 import flet as ft
 import requests
+from models.navbar import NavBar
 
 API_URL = "http://127.0.0.1:5000/api/data"
 
@@ -9,6 +10,7 @@ def data(page: ft.Page):
 
     # Diccionario para almacenar el estado de ordenamiento de cada columna
     sort_states = {
+        "vehicle": "asc",
         "zona": "asc",
         "date_in": "asc",
         "date_out": "asc"
@@ -54,7 +56,16 @@ def data(page: ft.Page):
 
         # Ordena los registros según el criterio y el estado de ordenamiento
         tipo_orden = sort_states[criterio] == "asc"
-        registros = sorted(registros, key=lambda log: log.get(criterio), reverse=tipo_orden)
+        if criterio == "date_out":
+            registros = sorted(registros, 
+                key=lambda log: (
+                    log.get("date_out") is not None,  # Primero ordena por presencia de fecha
+                    log.get("date_out") or "0000-00-00"  # Luego ordena por valor de fecha
+                ), 
+                reverse=not tipo_orden
+            )
+        else:
+            registros = sorted(registros, key=lambda log: log.get(criterio), reverse=tipo_orden)
 
         # Actualiza la tabla con los datos ordenados
         update_rows(registros)
@@ -125,12 +136,14 @@ def data(page: ft.Page):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
 
+    page.appbar = NavBar(page)
     # Ejecuta la función para llenar la tabla la primera vez
     update_data()
 
     return ft.View(
         "/data",
         [logs_layout],
+        appbar=page.appbar,
         bgcolor=ft.colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )

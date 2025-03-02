@@ -1,15 +1,22 @@
 import flet as ft
 from services.db_users import is_admin, verify_login
+from models.navbar import NavBar
 
 def login(page):
     def on_login_click(e):
-        global current_user_email
         email = gmail_field.value
         password = pass_field.value
         
         if email and password:
             if verify_login(email, password):
-                current_user_email = email
+                user_data = {
+                    "email": email,
+                    "is_admin": is_admin(email),
+                }
+                
+                page.session.set("user", user_data)
+                page.client_storage.set("user", user_data)
+                
                 page.go("/home")
             else:
                 lbl_error.value = "Usuario o contraseña incorrectos"

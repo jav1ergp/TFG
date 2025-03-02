@@ -1,11 +1,9 @@
 import flet as ft
-
 from services.db_users import register_user
 
 # Vista de Registro
 def register(page):
     def on_register_submit(e):
-        global current_user_email
         email = register_email_field.value
         password = register_pass_field.value
         confirm_password = confirm_register_pass_field.value
@@ -17,7 +15,13 @@ def register(page):
             result = register_user(email, password)
             
             if result == "success":
-                current_user_email = email
+                user_data = {
+                    "email": email,
+                    "is_admin": False,
+                }
+                page.session.set("user", user_data)
+                page.client_storage.set("user", user_data)
+                
                 page.go("/home")
             elif result == "email_exists":
                 lbl_error.value = "El correo electrónico ya está registrado"
