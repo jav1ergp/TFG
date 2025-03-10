@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify
 from pymongo import MongoClient
-from config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO
+from config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO, MONGO_URI
 
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client['parking']
 collection = db['vehicles']
 

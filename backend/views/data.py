@@ -1,8 +1,8 @@
 import flet as ft
 import requests
 from models.navbar import NavBar
+from config import API_URL_DATA
 
-API_URL = "http://127.0.0.1:5000/api/data"
 
 def data(page: ft.Page):
     current_page = 1
@@ -40,7 +40,7 @@ def data(page: ft.Page):
         }
         
         try:
-            response = requests.get(API_URL, params=params)
+            response = requests.get(API_URL_DATA, params=params)
             if response.status_code == 200:
                 data = response.json()
                 registros = data["data"]
@@ -147,4 +147,5 @@ def data(page: ft.Page):
         appbar=page.appbar,
         bgcolor=ft.colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        scroll=ft.ScrollMode.AUTO
     )

@@ -14,7 +14,7 @@ current_user_email = None
 def main(page: ft.Page):
     def route_change(route):
         page.views.clear()
-
+        
         if route == "/admin" and not is_admin(current_user_email):
             page.go("/home")  # Redirigir a home si no es admin
 

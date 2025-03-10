@@ -1,6 +1,5 @@
 import flet as ft
 from services.db_users import is_admin, verify_login
-from models.navbar import NavBar
 
 def login(page):
     def on_login_click(e):
@@ -44,7 +43,8 @@ def login(page):
         can_reveal_password=True,
         width=300,
         color=ft.Colors.BLACK,
-        prefix_icon=ft.Icon(ft.Icons.LOCK, color=ft.Colors.BLACK)
+        prefix_icon=ft.Icon(ft.Icons.LOCK, color=ft.Colors.BLACK),
+        on_submit=on_login_click
     )
 
     login_button = ft.ElevatedButton(
@@ -116,5 +116,6 @@ def login(page):
             lbl_error,            
         ],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        vertical_alignment=ft.MainAxisAlignment.CENTER
+        vertical_alignment=ft.MainAxisAlignment.CENTER,
+        scroll=ft.ScrollMode.AUTO
     )

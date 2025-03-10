@@ -2,9 +2,10 @@ from pymongo import MongoClient
 from datetime import datetime
 from models.plate import Plate
 from models.log import Log
+from config import MONGO_URI
 
 # Conexión a la base de datos
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client['parking']
 collection = db['vehicles']
 

@@ -1,7 +1,6 @@
 import flet as ft
 import requests
-
-API_URL = "http://127.0.0.1:5000/api/logs"
+from config import API_URL_LOGS
 
 def logs(page: ft.Page):
     current_page = 1  # Página actual
@@ -14,11 +13,11 @@ def logs(page: ft.Page):
         for log in registros:
             table.rows.append(ft.DataRow(
                 cells=[
-                    ft.DataCell(ft.Text(log.get("action"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("description"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("plate"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("zone"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("timestamp"), color=ft.colors.WHITE)),  
+                    ft.DataCell(ft.Text(log.get("action"), color=ft.Colors.WHITE)),
+                    ft.DataCell(ft.Text(log.get("description"), color=ft.Colors.WHITE)),
+                    ft.DataCell(ft.Text(log.get("plate"), color=ft.Colors.WHITE)),
+                    ft.DataCell(ft.Text(log.get("zone"), color=ft.Colors.WHITE)),
+                    ft.DataCell(ft.Text(log.get("timestamp"), color=ft.Colors.WHITE)),  
                 ]
             ))
         page.update()
@@ -32,7 +31,7 @@ def logs(page: ft.Page):
         }
 
         try:
-            response = requests.get(API_URL, params=params)
+            response = requests.get(API_URL_LOGS, params=params)
             if response.status_code == 200:
                 data = response.json()
                 registros = data["data"]
@@ -59,34 +58,34 @@ def logs(page: ft.Page):
 
     # Crear la tabla
     table = ft.DataTable(
-        bgcolor=ft.colors.BLUE_GREY_700,
-        border=ft.border.all(2, ft.colors.BLUE_GREY_200),
+        bgcolor=ft.Colors.BLUE_GREY_700,
+        border=ft.border.all(2, ft.Colors.BLUE_GREY_200),
         columns=[
-            ft.DataColumn(ft.Text("Acción", color=ft.colors.WHITE)),
-            ft.DataColumn(ft.Text("Descripción", color=ft.colors.WHITE)),
-            ft.DataColumn(ft.Text("Matrícula", color=ft.colors.WHITE)),
-            ft.DataColumn(ft.Text("Zona", color=ft.colors.WHITE)),
-            ft.DataColumn(ft.Text("Hora", color=ft.colors.WHITE)),
+            ft.DataColumn(ft.Text("Acción", color=ft.Colors.WHITE)),
+            ft.DataColumn(ft.Text("Descripción", color=ft.Colors.WHITE)),
+            ft.DataColumn(ft.Text("Matrícula", color=ft.Colors.WHITE)),
+            ft.DataColumn(ft.Text("Zona", color=ft.Colors.WHITE)),
+            ft.DataColumn(ft.Text("Hora", color=ft.Colors.WHITE)),
         ],
         rows=[]
     )
 
     # Botón para actualizar los datos
-    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, on_click=lambda _: update_data())
+    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.Colors.WHITE, width=120, bgcolor=ft.Colors.GREEN, on_click=lambda _: update_data())
 
     # Botones de paginación
-    btn_prev = ft.ElevatedButton("Anterior", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
-    btn_next = ft.ElevatedButton("Siguiente", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=next_page)
+    btn_prev = ft.ElevatedButton("Anterior", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.BLUE, on_click=prev_page)
+    btn_next = ft.ElevatedButton("Siguiente", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.BLUE, on_click=next_page)
 
     # Botón para volver
-    btn_back = ft.ElevatedButton("Volver", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
+    btn_back = ft.ElevatedButton("Volver", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
 
-    page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.colors.BLACK)
+    page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.Colors.BLACK)
     
     # Layout principal
     logs_layout = ft.Column(
         [
-            ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+            ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
             table,
             ft.Row([btn_prev, btn_refresh, btn_next], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
             page_counter,
@@ -102,6 +101,7 @@ def logs(page: ft.Page):
     return ft.View(
         "/logs",
         [logs_layout],
-        bgcolor=ft.colors.WHITE,
+        bgcolor=ft.Colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        scroll=ft.ScrollMode.AUTO
     )

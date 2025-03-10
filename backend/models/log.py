@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 from datetime import datetime
+from config import MONGO_URI
 
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client['parking']
 log_collection = db['logs']
 

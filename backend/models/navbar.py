@@ -10,6 +10,7 @@ class NavBar(ft.AppBar):
         self.title = self.build_title()
         self.actions = self._build_dynamic_actions()
         self.dlg = self.confirm_dialog()
+        self.adaptive = True
 
         
     def build_logo(self):
@@ -24,7 +25,7 @@ class NavBar(ft.AppBar):
                         content=ft.Image(
                             src="../images/logougr4.png",
                         ),
-                        padding=5,
+                        padding=5
                     )
                 ]
             )
@@ -33,13 +34,13 @@ class NavBar(ft.AppBar):
     def build_title(self):
         """Title"""
         return ft.TextButton(
+            on_click=lambda _: self.page.go("/home"),
             content=ft.Text(
                 "Parking UGR",
                 color=ft.colors.WHITE,
                 weight=ft.FontWeight.BOLD,
-                size=20             
-            ),
-            on_click=lambda _: self.page.go("/home")
+                size=20
+            )
         )
     
     def _build_dynamic_actions(self):
@@ -61,22 +62,22 @@ class NavBar(ft.AppBar):
     def desktop_menu(self, admin_check):
         """Menú desktop"""
         actions = [
-            self.nav_button("Panel", ft.icons.DASHBOARD, "/home")
+            self.nav_button("Panel", ft.icons.HOME, "/home")
         ]
         
         if admin_check:
             actions.extend([
-                self.nav_button("Registros", ft.icons.CONTENT_PASTE, "/data"),
-                self.nav_button("Actividad", ft.icons.ASSIGNMENT, "/logs")
+                self.nav_button("Registros", ft.icons.STORAGE, "/data"),
+                self.nav_button("Actividad", ft.icons.HISTORY, "/logs")
             ])
         
         actions.append(
             ft.IconButton(
-                icon=ft.icons.EXIT_TO_APP,
+                on_click=lambda _: self.show_dialog(),
+                icon=ft.icons.LOGOUT,
                 icon_size=26,
                 icon_color=ft.colors.WHITE,
-                tooltip="Cerrar sesión",
-                on_click=lambda _: self.show_dialog(),
+                tooltip="Cerrar sesión"
             )
         )
         
@@ -97,11 +98,11 @@ class NavBar(ft.AppBar):
         
         base_items.append(
             ft.PopupMenuItem(
+                on_click=lambda _: self.show_dialog(),
                 content=ft.Row([
                     ft.Icon(ft.icons.EXIT_TO_APP, color=ft.colors.RED_700),
                     ft.Text("Salir", color=ft.colors.RED_700)
-                ]),
-                on_click=lambda _: self.show_dialog()
+                ])
             )
         )
         
@@ -120,7 +121,7 @@ class NavBar(ft.AppBar):
             margin=ft.margin.only(right=20),
             content=ft.Row(
                 controls=[
-                    ft.Icon(ft.icons.PERSON_PIN, color=ft.colors.WHITE, size=20),
+                    ft.Icon(ft.icons.PERSON, color=ft.colors.WHITE, size=20),
                     ft.Container(
                         content=ft.Text(
                             name,
@@ -135,22 +136,22 @@ class NavBar(ft.AppBar):
     def menu_item(self, text, icon, route):
         """Elemento de menú"""
         return ft.PopupMenuItem(
+            on_click=lambda _: self.page.go(route),
             height=40,
             content=ft.Row([
                 ft.Icon(icon, color=ft.colors.GREY_800),
                 ft.Text(text, color=ft.colors.GREY_800)
-            ]),
-            on_click=lambda _: self.page.go(route)
+            ])
         )
     
     def nav_button(self, tooltip, icon, route):
         """Botón de navegación"""
         return ft.IconButton(
+            on_click=lambda _: self.page.go(route),
             icon=icon,
             icon_size=24,
             icon_color=ft.colors.WHITE,
             tooltip=tooltip,
-            on_click=lambda _: self.page.go(route),
         )
     
     def confirm_dialog(self):

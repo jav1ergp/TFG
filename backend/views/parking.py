@@ -1,8 +1,7 @@
 import flet as ft
 from aiohttp import ClientSession
 import asyncio
-
-API_URL = "http://127.0.0.1:5000/api/spots"
+from config import API_URL_SPOTS
 
 class ParkingView(ft.UserControl):
     def __init__(self):
@@ -78,7 +77,7 @@ class ParkingView(ft.UserControl):
         while True:
             try:
                 async with ClientSession() as session:
-                    async with session.get(API_URL) as response:
+                    async with session.get(API_URL_SPOTS) as response:
                         if response.status == 200:
                             data = await response.json()
                             self.plazas_zona_entrada.value = data.get("entrada", "Error")
@@ -105,5 +104,6 @@ def parking(page: ft.Page):
         controls=[parking_view],
         bgcolor=ft.colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        vertical_alignment=ft.MainAxisAlignment.CENTER
+        vertical_alignment=ft.MainAxisAlignment.CENTER,
+        scroll=ft.ScrollMode.AUTO
     )

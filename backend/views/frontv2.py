@@ -1,10 +1,8 @@
 import flet as ft
 from aiohttp import ClientSession
 import asyncio
-from config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO
+from config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO, API_URL_SPOTS
 
-
-API_URL = "http://127.0.0.1:5000/api/spots"
 
 class ParkingZone(ft.UserControl):
     def __init__(self, name, total_slots_car, total_slots_moto):
@@ -15,9 +13,9 @@ class ParkingZone(ft.UserControl):
         self.total_slots_moto = total_slots_moto
         self.avaible_slots_moto = total_slots_moto
         self.status_car = ft.Text(f"{self.available_slots_car}/{self.total_slots_car}", size=24, weight=ft.FontWeight.BOLD) # 13/13
-        self.progress_car = ft.ProgressBar(width=200, color="green", bgcolor="#eeeeee") # Barra de progreso
+        self.progress_car = ft.ProgressBar(expand = True, color="green", bgcolor="white") # Barra de progreso
         self.status_moto = ft.Text(f"{self.avaible_slots_moto}/{self.total_slots_moto}", size=24, weight=ft.FontWeight.BOLD) # 13/13
-        self.progress_moto = ft.ProgressBar(width=200, color="green", bgcolor="#eeeeee") 
+        self.progress_moto = ft.ProgressBar(expand = True, color="green", bgcolor="white") 
         
     def build(self):
         self.title = ft.Text(self.name, size=20, weight=ft.FontWeight.BOLD)
@@ -26,6 +24,7 @@ class ParkingZone(ft.UserControl):
         Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=30)
         
         return ft.Card(
+            expand=True,
             content=ft.Container(
                 content=ft.Column([
                     ft.Row([P_icon, self.title]),
@@ -34,8 +33,8 @@ class ParkingZone(ft.UserControl):
                     ft.Row([Moto_icon, self.status_moto]),
                     self.progress_moto
                 ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                width=250,
                 padding=20,
+                margin=10,
             )
         )
 
@@ -69,8 +68,23 @@ class ParkingView(ft.UserControl):
         return ft.Column(
             controls=[
                 ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
-                ft.Row([self.zone_a, self.zone_b], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                btn_back
+                ft.ResponsiveRow(
+                    controls=[
+                        ft.Container(
+                            self.zone_a,
+                            col={"xs": 10, "sm": 5}, # Pantallas grandes en la misma linea, pequeñas se apilan, grid 12
+                            padding=10
+                        ),
+                        ft.Container(
+                            self.zone_b,
+                            col={"xs": 10, "sm": 5},
+                            padding=10
+                        )
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                ),
+                btn_back,
             ], 
             alignment=ft.MainAxisAlignment.CENTER, 
             horizontal_alignment=ft.CrossAxisAlignment.CENTER
@@ -81,7 +95,7 @@ class ParkingView(ft.UserControl):
         while True:
             try:
                 async with ClientSession() as session:
-                    async with session.get(API_URL) as response:
+                    async with session.get(API_URL_SPOTS) as response:
                         if response.status == 200:
                             data = await response.json()
                             self.zone_a.update_status(data.get("entrada_coche"), data.get("entrada_moto"))
@@ -107,5 +121,6 @@ def parking_page(page: ft.Page):
         controls=[parking_view],
         bgcolor=ft.Colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        vertical_alignment=ft.MainAxisAlignment.CENTER
+        vertical_alignment=ft.MainAxisAlignment.CENTER,
+        scroll=ft.ScrollMode.AUTO
     )
