@@ -21,7 +21,7 @@ def get_data():
     # Construir filtro de búsqueda
     query_filter = {}
     if search:
-        query_filter["plate"] = search 
+        query_filter["plate"] = search
         
     # Ordenación con filtro
     logs = collection.find(query_filter).sort(sort_field, sort_order).skip(skip).limit(limit)

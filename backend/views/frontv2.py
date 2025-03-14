@@ -1,6 +1,7 @@
 import flet as ft
 from aiohttp import ClientSession
 import asyncio
+from models.navbar import NavBar
 from config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO, API_URL_SPOTS
 
 
@@ -57,39 +58,34 @@ class ParkingView(ft.UserControl):
         self.task = None  # Tarea de actualización
     
     def build(self):
-        btn_back = ft.ElevatedButton(
-            "Volver",
-            color=ft.colors.WHITE,
-            width=100,
-            bgcolor=ft.colors.LIGHT_BLUE,
-            on_click=lambda _: self.page.go("/home")
-        )
-        
         return ft.Column(
             controls=[
-                ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
-                ft.ResponsiveRow(
-                    controls=[
-                        ft.Container(
-                            self.zone_a,
-                            col={"xs": 10, "sm": 5}, # Pantallas grandes en la misma linea, pequeñas se apilan, grid 12
-                            padding=10
-                        ),
-                        ft.Container(
-                            self.zone_b,
-                            col={"xs": 10, "sm": 5},
-                            padding=10
-                        )
-                    ],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                ft.Container(
+                    ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
                 ),
-                btn_back,
-            ], 
-            alignment=ft.MainAxisAlignment.CENTER, 
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                
+                ft.Container(
+                    margin=60,
+                    content=ft.ResponsiveRow(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        controls=[
+                            ft.Container(
+                                self.zone_a,
+                                col={"xs": 10, "sm": 5},
+                                padding=10
+                            ),
+                            ft.Container(
+                                self.zone_b,
+                                col={"xs": 10, "sm": 5},
+                                padding=10
+                            )
+                        ]
+                    )
+                )
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
-        
+
 
     async def update_parking_status(self):
         while True:
@@ -111,16 +107,17 @@ class ParkingView(ft.UserControl):
         self.task.cancel()  # Cancela la tarea al salir
         self.task = None  # Limpia la referencia
         
+    
 
 def parking_page(page: ft.Page):
     parking_view = ParkingView()
     page.add(parking_view)
+    page.appbar = NavBar(page)
     
     return ft.View(
-        "/parking2",
+        "/home",
         controls=[parking_view],
+        appbar=page.appbar,
         bgcolor=ft.Colors.WHITE,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        vertical_alignment=ft.MainAxisAlignment.CENTER,
         scroll=ft.ScrollMode.AUTO
     )

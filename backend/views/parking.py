@@ -80,8 +80,8 @@ class ParkingView(ft.UserControl):
                     async with session.get(API_URL_SPOTS) as response:
                         if response.status == 200:
                             data = await response.json()
-                            self.plazas_zona_entrada.value = data.get("entrada", "Error")
-                            self.plazas_zona_salida.value = data.get("salida", "Error")
+                            self.plazas_zona_entrada.value = data.get("entrada_coche", "Error")
+                            self.plazas_zona_salida.value = data.get("salida_coche", "Error")
                             self.plazas_zona_entrada.update()
                             self.plazas_zona_salida.update()
             except Exception as e:

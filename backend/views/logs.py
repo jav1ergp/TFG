@@ -1,5 +1,6 @@
 import flet as ft
 import requests
+from models.navbar import NavBar
 from config import API_URL_LOGS
 
 def logs(page: ft.Page):
@@ -77,9 +78,6 @@ def logs(page: ft.Page):
     btn_prev = ft.ElevatedButton("Anterior", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.BLUE, on_click=prev_page)
     btn_next = ft.ElevatedButton("Siguiente", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.BLUE, on_click=next_page)
 
-    # Botón para volver
-    btn_back = ft.ElevatedButton("Volver", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
-
     page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.Colors.BLACK)
     
     # Layout principal
@@ -88,19 +86,20 @@ def logs(page: ft.Page):
             ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
             table,
             ft.Row([btn_prev, btn_refresh, btn_next], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-            page_counter,
-            btn_back
+            page_counter
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
 
+    page.appbar = NavBar(page)
     # Cargar datos al iniciar la vista
     update_data()
 
     return ft.View(
         "/logs",
         [logs_layout],
+        appbar=page.appbar,
         bgcolor=ft.Colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         scroll=ft.ScrollMode.AUTO

@@ -16,7 +16,7 @@ class NavBar(ft.AppBar):
     def build_logo(self):
         """Logo"""
         return ft.Container(
-            on_click=lambda _: self.page.go("/home"),
+            on_click=lambda _: self.page.go("/parking2"),
             margin=ft.margin.only(left=10),
             content=ft.Row(
                 alignment=ft.MainAxisAlignment.START,

@@ -11,7 +11,7 @@ def data(page: ft.Page):
     sort_field = "date_in"
     sort_order = 1
     search_term = ""
-
+    
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
         table.rows.clear()
@@ -54,18 +54,19 @@ def data(page: ft.Page):
             
     # Función de ordenamiento 
     def sort_data(e):
-        nonlocal sort_field, sort_order, current_page
+        nonlocal sort_field, sort_order, current_page  
         sort_field = e.control.data["field"]
         sort_order = 1 if sort_order == -1 else -1  # Alternar orden
         current_page = 1
         update_data()
-
+   
     # Función de búsqueda por matrícula
     def search_by_plate(e):
         nonlocal search_term, current_page
         search_term = search_field.value.strip().upper()
         current_page = 1
         update_data()
+        
 
     def next_page(e):
         nonlocal current_page
@@ -118,20 +119,15 @@ def data(page: ft.Page):
     btn_prev = ft.ElevatedButton("Anterior", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
     btn_next = ft.ElevatedButton("Siguiente", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=next_page)
 
-    # Botón para volver
-    btn_back = ft.ElevatedButton("Volver", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.LIGHT_BLUE, on_click=lambda _: page.go("/home"))
-
     page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.colors.BLACK)
     # Layout principal
     logs_layout = ft.Column(
         [
             ft.Text("Data", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
-            ft.Row([search_field, btn_search], alignment=ft.MainAxisAlignment.CENTER, spacing=15),
             table,
+            ft.Row([search_field, btn_search], alignment=ft.MainAxisAlignment.CENTER, spacing=15),
             ft.Row([btn_prev, btn_refresh, btn_next], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
             page_counter,
-            btn_back
-
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
