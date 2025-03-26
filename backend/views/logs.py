@@ -4,9 +4,13 @@ from models.navbar import NavBar
 from config import API_URL_LOGS
 
 def logs(page: ft.Page):
-    current_page = 1  # Página actual
+    current_page = 1
     total_pages = 1
-    limit = 10
+    
+    if page.window_width < 600:
+        limit = 7
+    else:
+        limit = 10
     
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
@@ -72,7 +76,7 @@ def logs(page: ft.Page):
     )
 
     # Botón para actualizar los datos
-    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.Colors.WHITE, width=120, bgcolor=ft.Colors.GREEN, on_click=lambda _: update_data())
+    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.GREEN, on_click=lambda _: update_data())
 
     # Botones de paginación
     btn_prev = ft.ElevatedButton("Anterior", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.BLUE, on_click=prev_page)
@@ -84,7 +88,11 @@ def logs(page: ft.Page):
     logs_layout = ft.Column(
         [
             ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
-            table,
+            ft.Row(
+                [table],
+                scroll=ft.ScrollMode.AUTO,
+                vertical_alignment=ft.CrossAxisAlignment.START
+            ),
             ft.Row([btn_prev, btn_refresh, btn_next], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
             page_counter
         ],

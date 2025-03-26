@@ -16,7 +16,7 @@ class NavBar(ft.AppBar):
     def build_logo(self):
         """Logo"""
         return ft.Container(
-            on_click=lambda _: self.page.go("/parking2"),
+            on_click=lambda _: self.page.go("/parking"),
             margin=ft.margin.only(left=10),
             content=ft.Row(
                 alignment=ft.MainAxisAlignment.START,
@@ -91,8 +91,8 @@ class NavBar(ft.AppBar):
         
         if admin_check:
             base_items.extend([
-                self.menu_item("Registros", ft.icons.CONTENT_PASTE, "/data"),
-                self.menu_item("Actividad", ft.icons.ASSIGNMENT, "/logs"),
+                self.menu_item("Datos", ft.icons.CONTENT_PASTE, "/data"),
+                self.menu_item("Logs", ft.icons.ASSIGNMENT, "/logs"),
 
             ])
         
@@ -139,8 +139,8 @@ class NavBar(ft.AppBar):
             on_click=lambda _: self.page.go(route),
             height=40,
             content=ft.Row([
-                ft.Icon(icon, color=ft.colors.GREY_800),
-                ft.Text(text, color=ft.colors.GREY_800)
+                ft.Icon(icon, color=ft.colors.GREY),
+                ft.Text(text, color=ft.colors.GREY)
             ])
         )
     

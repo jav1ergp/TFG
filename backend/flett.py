@@ -23,7 +23,7 @@ def main(page: ft.Page):
             page.views.append(register(page))
         elif page.route == "/home":
             page.views.append(parking_page(page))
-        elif page.route == "/parking2":
+        elif page.route == "/parking":
             page.views.append(parking(page))
         elif page.route == "/data":
             page.views.append(data(page))

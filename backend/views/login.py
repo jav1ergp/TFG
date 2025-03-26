@@ -28,8 +28,15 @@ def login(page):
     def on_register_click(e):
         page.go("/register") 
 
-    logo = ft.Image(src="https://webmailest.ugr.es/skins/elastic/images/logougr.png?s=1718096294")
+    logo = ft.Image(
+        src="https://webmailest.ugr.es/skins/elastic/images/logougr.png?s=1718096294",
+    )
 
+    logo_container = ft.Container(
+        content=logo,
+        margin=ft.margin.only(top=40)
+    )
+    
     gmail_field = ft.TextField(
         label="Nombre de usuario",
         width=300,
@@ -101,7 +108,7 @@ def login(page):
         controls=[
             ft.Column(
                 [
-                    logo,
+                    logo_container,
                     gmail_field,
                     pass_field,
                     login_button,

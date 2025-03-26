@@ -33,8 +33,17 @@ def register(page):
         lbl_error.update()
         page.update()
 
+    def on_login_click(e):
+        page.go("/login") 
 
-    logo = ft.Image(src="https://webmailest.ugr.es/skins/elastic/images/logougr.png?s=1718096294")
+    logo = ft.Image(
+        src="https://webmailest.ugr.es/skins/elastic/images/logougr.png?s=1718096294",
+    )
+
+    logo_container = ft.Container(
+        content=logo,
+        margin=ft.margin.only(top=40)
+    )
 
     register_email_field = ft.TextField(
         label="Correo electrónico",
@@ -74,7 +83,19 @@ def register(page):
     )
 
     lbl_error = ft.Text(color="red")
-
+    lbl_login = ft.Text("¿Tienes una cuenta?", color=ft.Colors.BLACK)
+    
+    login_button = ft.ElevatedButton(
+        "INICIAR SESIÓN",
+        on_click=on_login_click,
+        width=300,
+        color=ft.Colors.WHITE,
+        bgcolor=ft.Colors.LIGHT_BLUE,
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10)
+        )
+    )
+    
     footer_text = ft.Column(
         controls=[
             ft.Text(
@@ -103,11 +124,13 @@ def register(page):
         controls=[
             ft.Column(
                 [
-                    logo,
+                    logo_container,
                     register_email_field,
                     register_pass_field,
                     confirm_register_pass_field,
                     register_button,
+                    lbl_login,
+                    login_button,
                     footer_text,
                     lbl_error,
                 ],

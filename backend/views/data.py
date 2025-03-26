@@ -7,11 +7,15 @@ from config import API_URL_DATA
 def data(page: ft.Page):
     current_page = 1
     total_pages = 1
-    limit = 10
     sort_field = "date_in"
     sort_order = 1
     search_term = ""
     
+    if page.window_width < 600:
+        limit = 7
+    else:
+        limit = 10
+        
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
         table.rows.clear()
@@ -100,7 +104,7 @@ def data(page: ft.Page):
     search_field = ft.TextField(
         label="Buscar por matrícula",
         color=ft.colors.BLACK,
-        width=300,
+        width=250,
         on_submit=search_by_plate
     )
 
@@ -109,11 +113,12 @@ def data(page: ft.Page):
         "Buscar",
         color=ft.colors.WHITE,
         bgcolor=ft.colors.BLUE,
+        width=70,
         on_click=search_by_plate
     )
 
     # Botón para actualizar los datos
-    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, on_click=lambda _: update_data())
+    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.GREEN, on_click=lambda _: update_data())
 
     # Botones de paginación
     btn_prev = ft.ElevatedButton("Anterior", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
@@ -124,7 +129,11 @@ def data(page: ft.Page):
     logs_layout = ft.Column(
         [
             ft.Text("Data", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
-            table,
+            ft.Row(
+                [table],
+                scroll=ft.ScrollMode.AUTO,
+                vertical_alignment=ft.CrossAxisAlignment.START
+            ),
             ft.Row([search_field, btn_search], alignment=ft.MainAxisAlignment.CENTER, spacing=15),
             ft.Row([btn_prev, btn_refresh, btn_next], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
             page_counter,
