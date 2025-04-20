@@ -12,21 +12,22 @@ class ParkingZone:
         self.total_slots_moto = total_moto
 
         # Crear controles directamente
-        self.status_car = ft.Text(f"{total_car}/{total_car}", size=24, weight=ft.FontWeight.BOLD)
+        self.status_car = ft.Text(f"{total_car}/{total_car}", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
         self.progress_car = ft.ProgressBar(expand=True, color="green", bgcolor="white")
-        self.status_moto = ft.Text(f"{total_moto}/{total_moto}", size=24, weight=ft.FontWeight.BOLD)
+        self.status_moto = ft.Text(f"{total_moto}/{total_moto}", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
         self.progress_moto = ft.ProgressBar(expand=True, color="green", bgcolor="white")
         
         self.control = self._build_card()
 
     def _build_card(self):
-        title = ft.Text(self.name, size=20, weight=ft.FontWeight.BOLD)
+        title = ft.Text(self.name, size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
         P_icon = ft.Icon(ft.icons.LOCAL_PARKING, size=30)
         Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=30)
         Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=30)
         
         return ft.Card(
             expand=True,
+            color="#1E1E1E",
             content=ft.Container(
                 content=ft.Column([
                     ft.Row([P_icon, title]),
@@ -58,7 +59,7 @@ class ParkingView:
         return ft.Column(
             controls=[
                 ft.Container(
-                    ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+                    ft.Text("PLAZAS LIBRES", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
                 ),
                 ft.Container(
                     margin=60,
@@ -102,13 +103,24 @@ def parking_page(page: ft.Page):
     page.add(parking_view)
     page.appbar = NavBar(page)
     
+    switch_button = ft.IconButton(
+        icon=ft.icons.VISIBILITY,
+        tooltip="Vista visual",
+        on_click=lambda e: page.go("/info")
+    )
+    
     # Iniciar la actualización periódica
     page.run_task(parking_view.update_parking_status, page)
     
     return ft.View(
         "/home",
-        controls=[parking_view.control],
+        controls=[
+            parking_view.control,
+            switch_button
+        ],
         appbar=page.appbar,
         bgcolor=ft.colors.WHITE,
-        scroll=ft.ScrollMode.AUTO
+        scroll=ft.ScrollMode.AUTO,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        vertical_alignment=ft.MainAxisAlignment.CENTER
     )

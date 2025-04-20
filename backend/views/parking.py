@@ -58,7 +58,7 @@ class ParkingView2:
         return ft.Column(
             controls=[
                 ft.Container(
-                    ft.Text("Parking Status", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+                    ft.Text("PLAZAS LIBRES", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
                 ),
                 ft.Container(                        
                     margin=20,
@@ -94,19 +94,26 @@ class ParkingView2:
             except Exception as e:
                 print("Error al obtener datos de la API:", e)
             await asyncio.sleep(5)
-            
 
 def parking(page: ft.Page):
     parking_view = ParkingView2()
     page.add(parking_view)
     page.appbar = NavBar(page)
     
+    switch_button = ft.IconButton(
+        icon=ft.icons.LOCAL_PARKING,
+        tooltip="Vista de tarjetas",
+        on_click=lambda e: page.go("/home")
+    )
     # Iniciar la actualización periódica
     page.run_task(parking_view.update_parking_status, page)
     
     return ft.View(
         "/parking",
-        controls=[parking_view.control],
+        controls=[
+            parking_view.control,
+            switch_button
+        ],
         appbar=page.appbar,
         bgcolor=ft.colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,

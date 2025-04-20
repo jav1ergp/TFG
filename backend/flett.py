@@ -1,34 +1,18 @@
 import flet as ft
-from services.db_users import is_admin
-from views.login import login
-from views.register import register
-from views.frontv2 import parking_page
-from views.parking import parking
-from views.data import data
-from views.logs import logs
+from views_handler import get_page
 
 current_user_email = None
 # Definición del método principal con el enrutamiento de la aplicación
 def main(page: ft.Page):
     def route_change(route):
         page.views.clear()
-        
-        if route == "/admin" and not is_admin(current_user_email):
-            page.go("/home")  # Redirigir a home si no es admin
 
-        # Enrutamiento normal
-        if page.route == "/login":
-            page.views.append(login(page))
-        elif page.route == "/register":
-            page.views.append(register(page))
-        elif page.route == "/home":
-            page.views.append(parking_page(page))
-        elif page.route == "/parking":
-            page.views.append(parking(page))
-        elif page.route == "/data":
-            page.views.append(data(page))
-        elif page.route == "/logs":
-            page.views.append(logs(page))
+        view = get_page(page, current_user_email)
+
+        if view:
+            page.views.append(view)
+        else:
+            page.go("/login")  # Redirección en caso de ruta desconocida
         page.update()
 
     page.on_route_change = route_change

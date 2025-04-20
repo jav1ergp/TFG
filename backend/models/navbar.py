@@ -10,11 +10,12 @@ class NavBar(ft.AppBar):
         self.title = self.build_title()
         self.actions = self._build_dynamic_actions()
         self.dlg = self.confirm_dialog()
+        self.page.overlay.append(self.dlg)
+        self.page.on_resized = self.on_resized
         self.adaptive = True
 
-        
+    
     def build_logo(self):
-        """Logo"""
         return ft.Container(
             on_click=lambda _: self.page.go("/parking"),
             margin=ft.margin.only(left=10),
@@ -32,25 +33,33 @@ class NavBar(ft.AppBar):
         )
     
     def build_title(self):
-        """Title"""
-        return ft.TextButton(
-            on_click=lambda _: self.page.go("/home"),
-            content=ft.Text(
-                "Parking UGR",
+        if self.page.window.width < 600:
+            text=ft.Text(
+                "UGR",
                 color=ft.colors.WHITE,
                 weight=ft.FontWeight.BOLD,
                 size=20
             )
+        else:
+            text=ft.Text(
+                "Parking Etsiit UGR",
+                color=ft.colors.WHITE,
+                weight=ft.FontWeight.BOLD,
+                size=20
+            )
+        
+        return ft.TextButton(
+            on_click=lambda _: self.page.go("/home"),
+            content = text    
         )
     
     def _build_dynamic_actions(self):
-        """Menu desktop o movil"""
         actions = []
         
         user = self.page.session.get("user") or {}
         admin_check = user.get("is_admin", False)
         
-        if self.page.window_width < 600:
+        if self.page.window.width < 600:
             actions.append(self.mobile_menu(admin_check))
         else:
             actions.extend(self.desktop_menu(admin_check))
@@ -60,13 +69,11 @@ class NavBar(ft.AppBar):
     
     
     def desktop_menu(self, admin_check):
-        """Menú desktop"""
-        actions = [
-            self.nav_button("Panel", ft.icons.HOME, "/home")
-        ]
+        actions = []
         
         if admin_check:
             actions.extend([
+                self.nav_button("Panel", ft.icons.HOME, "/home"),
                 self.nav_button("Registros", ft.icons.STORAGE, "/data"),
                 self.nav_button("Actividad", ft.icons.HISTORY, "/logs")
             ])
@@ -84,13 +91,11 @@ class NavBar(ft.AppBar):
         return actions
     
     def mobile_menu(self, admin_check):
-        """Menú móvil"""
-        base_items = [
-            self.menu_item("Panel", ft.icons.DASHBOARD, "/home"),
-        ]
+        base_items = []
         
         if admin_check:
             base_items.extend([
+                self.menu_item("Panel", ft.icons.DASHBOARD, "/home"),
                 self.menu_item("Datos", ft.icons.CONTENT_PASTE, "/data"),
                 self.menu_item("Logs", ft.icons.ASSIGNMENT, "/logs"),
 
@@ -111,8 +116,12 @@ class NavBar(ft.AppBar):
             items=base_items
         )
     
+    def on_resized(self, e):
+        self.actions = self._build_dynamic_actions()
+        self.title = self.build_title()
+        self.page.update()
+    
     def user_status(self):
-        """Indicador de usuario"""
         user = self.page.session.get("user")
         name = user.get('email').split('@')[0].upper()
         
@@ -134,7 +143,6 @@ class NavBar(ft.AppBar):
         )
     
     def menu_item(self, text, icon, route):
-        """Elemento de menú"""
         return ft.PopupMenuItem(
             on_click=lambda _: self.page.go(route),
             height=40,
@@ -145,7 +153,6 @@ class NavBar(ft.AppBar):
         )
     
     def nav_button(self, tooltip, icon, route):
-        """Botón de navegación"""
         return ft.IconButton(
             on_click=lambda _: self.page.go(route),
             icon=icon,
@@ -155,8 +162,8 @@ class NavBar(ft.AppBar):
         )
     
     def confirm_dialog(self):
-        """Diálogo de confirmación"""
         return ft.AlertDialog(
+            modal=True,
             title=ft.Row([ft.Icon(ft.icons.WARNING_AMBER), ft.Text("Confirmar")]),
             content=ft.Text("¿Desea cerrar la sesión actual?", size=14),
             actions=[
@@ -165,25 +172,20 @@ class NavBar(ft.AppBar):
                 ft.TextButton("Confirmar", on_click=self.logout,
                          style=ft.ButtonStyle(color=ft.colors.RED)),
             ],
-            modal=True,
             actions_alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         )
         
     def show_dialog(self):
-        """Muestra el diálogo de confirmación"""
-        self.page.dialog = self.dlg
         self.dlg.open = True
         self.page.update()
     
     def logout(self, e):
-        """Cierra la sesión"""
         self.page.session.clear()
         self.page.client_storage.clear()
-        self.page.dialog.open = False
+        self.dlg.open = False
         self.page.update()
         self.page.go("/login")
     
     def close_dialog(self, e):
-        """Cierra el diálogo"""
-        self.page.dialog.open = False
+        self.dlg.open = False
         self.page.update()

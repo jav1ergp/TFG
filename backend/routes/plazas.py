@@ -20,7 +20,7 @@ def parking_status():
     available_exit_spots_car = TOTAL_EXIT_SPOTS_CAR - occupied_exit_car
     
     available_entry_spots_moto = TOTAL_ENTRY_SPOTS_MOTO - occupied_entry_moto
-    available_exit_spots_moto = TOTAL_EXIT_SPOTS_MOTO - occupied_exit_moto
+    available_exit_spots_moto = TOTAL_EXIT_SPOTS_MOTO - TOTAL_EXIT_SPOTS_MOTO
 
     return jsonify({
         "entrada_coche": available_entry_spots_car, 

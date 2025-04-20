@@ -11,7 +11,7 @@ def data(page: ft.Page):
     sort_order = 1
     search_term = ""
     
-    if page.window_width < 600:
+    if page.window.width < 600:
         limit = 7
     else:
         limit = 10

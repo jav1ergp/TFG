@@ -24,7 +24,15 @@ def get_data():
         query_filter["plate"] = search
         
     # Ordenación con filtro
-    logs = collection.find(query_filter).sort(sort_field, sort_order).skip(skip).limit(limit)
+    if sort_field != "date_in":
+        logs = collection.find(query_filter).sort([
+            (sort_field, sort_order),
+            ("date_in", -1)
+        ])
+    else:
+        logs = collection.find(query_filter).sort("date_in", sort_order)
+
+    logs = logs.skip(skip).limit(limit)
     
     # Contar total de documentos CON filtro
     total = collection.count_documents(query_filter)

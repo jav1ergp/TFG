@@ -7,7 +7,7 @@ def logs(page: ft.Page):
     current_page = 1
     total_pages = 1
     
-    if page.window_width < 600:
+    if page.window.width < 600:
         limit = 7
     else:
         limit = 10
