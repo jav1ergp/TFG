@@ -106,7 +106,7 @@ def parking_page(page: ft.Page):
     switch_button = ft.IconButton(
         icon=ft.icons.VISIBILITY,
         tooltip="Vista visual",
-        on_click=lambda e: page.go("/info")
+        on_click=lambda e: page.go("/graphics")
     )
     
     # Iniciar la actualización periódica

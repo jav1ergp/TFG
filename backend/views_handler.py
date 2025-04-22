@@ -5,6 +5,7 @@ from views.parking import parking
 from views.data import data
 from views.logs import logs
 from views.info import info_page
+from views.graphics import graphics_page
 
 def get_page(page, current_user_email):
     route = page.route
@@ -24,6 +25,8 @@ def get_page(page, current_user_email):
             return logs(page)
         case "/info":
             return info_page(page)
+        case "/graphics":
+            return graphics_page(page)
         
         case _:
             return None

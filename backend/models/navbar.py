@@ -70,15 +70,40 @@ class NavBar(ft.AppBar):
     
     def desktop_menu(self, admin_check):
         actions = []
+        settings_items = [
+           ft.PopupMenuItem(
+                on_click=lambda _: self.toggle_theme(),
+                content=ft.Row([
+                    ft.Icon(ft.icons.BRIGHTNESS_6, color=ft.colors.GREY),
+                    ft.Text("Cambiar tema", color=ft.colors.GREY)
+                ])                
+            )
+        ]
         
         if admin_check:
+            settings_items.append(
+                ft.PopupMenuItem(
+                    on_click=lambda _: self.page.go("/info"),
+                    content=ft.Row([
+                        ft.Icon(ft.icons.INFO, color=ft.colors.GREY),
+                        ft.Text("Parking Fijo", color=ft.colors.GREY)
+                    ])
+                )
+            )
             actions.extend([
                 self.nav_button("Panel", ft.icons.HOME, "/home"),
                 self.nav_button("Registros", ft.icons.STORAGE, "/data"),
-                self.nav_button("Actividad", ft.icons.HISTORY, "/logs")
+                self.nav_button("Actividad", ft.icons.HISTORY, "/logs"),
             ])
         
-        actions.append(
+        actions.extend([
+            ft.PopupMenuButton(
+                icon=ft.icons.SETTINGS,
+                icon_size=26,
+                icon_color=ft.colors.WHITE,
+                tooltip="Configuración",
+                items=settings_items
+            ),
             ft.IconButton(
                 on_click=lambda _: self.show_dialog(),
                 icon=ft.icons.LOGOUT,
@@ -86,7 +111,7 @@ class NavBar(ft.AppBar):
                 icon_color=ft.colors.WHITE,
                 tooltip="Cerrar sesión"
             )
-        )
+        ])
         
         return actions
     
@@ -98,10 +123,17 @@ class NavBar(ft.AppBar):
                 self.menu_item("Panel", ft.icons.DASHBOARD, "/home"),
                 self.menu_item("Datos", ft.icons.CONTENT_PASTE, "/data"),
                 self.menu_item("Logs", ft.icons.ASSIGNMENT, "/logs"),
-
+                self.menu_item("Parking Fijo", ft.icons.LOCAL_PARKING, "/info")
             ])
         
-        base_items.append(
+        base_items.extend([
+            ft.PopupMenuItem(
+                on_click=lambda _: self.toggle_theme(),
+                content=ft.Row([
+                    ft.Icon(ft.icons.BRIGHTNESS_6, color=ft.colors.GREY),
+                    ft.Text("Cambiar tema", color=ft.colors.GREY)
+                ])                
+            ),
             ft.PopupMenuItem(
                 on_click=lambda _: self.show_dialog(),
                 content=ft.Row([
@@ -109,13 +141,20 @@ class NavBar(ft.AppBar):
                     ft.Text("Salir", color=ft.colors.RED_700)
                 ])
             )
-        )
+        ])
         
         return ft.PopupMenuButton(
             icon=ft.Icon(ft.icons.MENU, color="white"),
             items=base_items
         )
     
+    def toggle_theme(self):
+        self.page.theme_mode = (
+            ft.ThemeMode.LIGHT if self.page.theme_mode == ft.ThemeMode.DARK else ft.ThemeMode.DARK
+        )
+        self.page.update()
+
+
     def on_resized(self, e):
         self.actions = self._build_dynamic_actions()
         self.title = self.build_title()
