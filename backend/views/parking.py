@@ -58,7 +58,7 @@ class ParkingView2:
         return ft.Column(
             controls=[
                 ft.Container(
-                    ft.Text("PLAZAS LIBRES", size=30, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+                    ft.Text("PLAZAS LIBRES", size=30, weight=ft.FontWeight.BOLD),
                 ),
                 ft.Container(                        
                     margin=20,
@@ -74,7 +74,7 @@ class ParkingView2:
                 )
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER            
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER         
         )
 
     async def update_parking_status(self, page):
@@ -102,6 +102,7 @@ def parking(page: ft.Page):
     
     switch_button = ft.IconButton(
         icon=ft.icons.LOCAL_PARKING,
+        icon_color="#84c3e3",
         tooltip="Vista de tarjetas",
         on_click=lambda e: page.go("/home")
     )
@@ -115,7 +116,6 @@ def parking(page: ft.Page):
             switch_button
         ],
         appbar=page.appbar,
-        bgcolor=ft.colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         vertical_alignment=ft.MainAxisAlignment.CENTER,
         scroll=ft.ScrollMode.AUTO

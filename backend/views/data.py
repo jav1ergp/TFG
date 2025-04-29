@@ -103,7 +103,6 @@ def data(page: ft.Page):
     # Campo de búsqueda por matrícula
     search_field = ft.TextField(
         label="Buscar por matrícula",
-        color=ft.colors.BLACK,
         width=250,
         on_submit=search_by_plate
     )
@@ -124,11 +123,11 @@ def data(page: ft.Page):
     btn_prev = ft.ElevatedButton("Anterior", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
     btn_next = ft.ElevatedButton("Siguiente", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=next_page)
 
-    page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.colors.BLACK)
+    page_counter = ft.Text(f"Página {current_page} de {total_pages}")
     # Layout principal
     logs_layout = ft.Column(
         [
-            ft.Text("Data", size=24, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+            ft.Text("Data", size=24, weight=ft.FontWeight.BOLD),
             ft.Row(
                 [table],
                 scroll=ft.ScrollMode.AUTO,
@@ -150,7 +149,6 @@ def data(page: ft.Page):
         "/data",
         [logs_layout],
         appbar=page.appbar,
-        bgcolor=ft.colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         scroll=ft.ScrollMode.AUTO
     )

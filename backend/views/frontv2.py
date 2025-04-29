@@ -21,9 +21,9 @@ class ParkingZone:
 
     def _build_card(self):
         title = ft.Text(self.name, size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
-        P_icon = ft.Icon(ft.icons.LOCAL_PARKING, size=30)
-        Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=30)
-        Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=30)
+        P_icon = ft.Icon(ft.icons.LOCAL_PARKING, size=30, color="#84c3e3")
+        Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=30, color="#84c3e3")
+        Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=30, color="#84c3e3")
         
         return ft.Card(
             expand=True,
@@ -46,7 +46,8 @@ class ParkingZone:
         self.progress_car.value = available_car / self.total_slots_car
         self.status_moto.value = f"{available_moto}/{self.total_slots_moto}"
         self.progress_moto.value = available_moto / self.total_slots_moto
-        self.control.update()
+        if self.control.page:
+            self.control.update()
 
 class ParkingView:
     def __init__(self):
@@ -59,7 +60,7 @@ class ParkingView:
         return ft.Column(
             controls=[
                 ft.Container(
-                    ft.Text("PLAZAS LIBRES", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+                    ft.Text("PLAZAS LIBRES", size=30, weight=ft.FontWeight.BOLD),
                 ),
                 ft.Container(
                     margin=60,
@@ -106,11 +107,13 @@ def parking_page(page: ft.Page):
     switch_button = ft.IconButton(
         icon=ft.icons.VISIBILITY,
         tooltip="Vista visual",
-        on_click=lambda e: page.go("/graphics")
+        icon_color="#84c3e3",
+        on_click=lambda e: page.go("/parking")
     )
-    
+        
     # Iniciar la actualización periódica
     page.run_task(parking_view.update_parking_status, page)
+    
     
     return ft.View(
         "/home",
@@ -119,7 +122,6 @@ def parking_page(page: ft.Page):
             switch_button
         ],
         appbar=page.appbar,
-        bgcolor=ft.colors.WHITE,
         scroll=ft.ScrollMode.AUTO,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         vertical_alignment=ft.MainAxisAlignment.CENTER

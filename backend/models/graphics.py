@@ -24,6 +24,7 @@ class GraphOne(ft.Container):
                     radius=self.normal_radius,
                     badge=ft.Icon(
                         ft.Icons.DIRECTIONS_CAR if tipo == "coche" else ft.Icons.TWO_WHEELER,
+                        color="#84c3e3",
                         size=self.normal_badge_size
                     ),
                     badge_position=1

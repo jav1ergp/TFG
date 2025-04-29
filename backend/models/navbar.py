@@ -8,7 +8,7 @@ class NavBar(ft.AppBar):
         self.bgcolor = ft.colors.LIGHT_BLUE
         self.leading = self.build_logo()
         self.title = self.build_title()
-        self.actions = self._build_dynamic_actions()
+        self.actions = self.responsive_menu()
         self.dlg = self.confirm_dialog()
         self.page.overlay.append(self.dlg)
         self.page.on_resized = self.on_resized
@@ -53,7 +53,7 @@ class NavBar(ft.AppBar):
             content = text    
         )
     
-    def _build_dynamic_actions(self):
+    def responsive_menu(self):
         actions = []
         
         user = self.page.session.get("user") or {}
@@ -70,30 +70,23 @@ class NavBar(ft.AppBar):
     
     def desktop_menu(self, admin_check):
         actions = []
-        settings_items = [
-           ft.PopupMenuItem(
-                on_click=lambda _: self.toggle_theme(),
-                content=ft.Row([
-                    ft.Icon(ft.icons.BRIGHTNESS_6, color=ft.colors.GREY),
-                    ft.Text("Cambiar tema", color=ft.colors.GREY)
-                ])                
-            )
-        ]
+        settings_items = []
         
         if admin_check:
             settings_items.append(
                 ft.PopupMenuItem(
                     on_click=lambda _: self.page.go("/info"),
                     content=ft.Row([
-                        ft.Icon(ft.icons.INFO, color=ft.colors.GREY),
+                        ft.Icon(ft.icons.LOCAL_PARKING, color=ft.colors.GREY),
                         ft.Text("Parking Fijo", color=ft.colors.GREY)
                     ])
                 )
             )
             actions.extend([
                 self.nav_button("Panel", ft.icons.HOME, "/home"),
-                self.nav_button("Registros", ft.icons.STORAGE, "/data"),
+                self.nav_button("Registros", ft.icons.ASSIGNMENT, "/data"),
                 self.nav_button("Actividad", ft.icons.HISTORY, "/logs"),
+                self.nav_button("Graficas", ft.icons.BAR_CHART, "/graphics"),
             ])
         
         actions.extend([
@@ -113,6 +106,15 @@ class NavBar(ft.AppBar):
             )
         ])
         
+        settings_items.append(
+            ft.PopupMenuItem(
+                on_click=lambda _: self.toggle_theme(),
+                content=ft.Row([
+                    ft.Icon(ft.icons.BRIGHTNESS_6, color=ft.colors.GREY),
+                    ft.Text("Cambiar tema", color=ft.colors.GREY)
+                ])                
+            )
+        )
         return actions
     
     def mobile_menu(self, admin_check):
@@ -120,9 +122,10 @@ class NavBar(ft.AppBar):
         
         if admin_check:
             base_items.extend([
-                self.menu_item("Panel", ft.icons.DASHBOARD, "/home"),
-                self.menu_item("Datos", ft.icons.CONTENT_PASTE, "/data"),
-                self.menu_item("Logs", ft.icons.ASSIGNMENT, "/logs"),
+                self.menu_item("Panel", ft.icons.HOME, "/home"),
+                self.menu_item("Datos", ft.icons.ASSIGNMENT, "/data"),
+                self.menu_item("Logs", ft.icons.HISTORY, "/logs"),
+                self.menu_item("Graficas", ft.icons.BAR_CHART, "/graphics"),
                 self.menu_item("Parking Fijo", ft.icons.LOCAL_PARKING, "/info")
             ])
         
@@ -153,10 +156,10 @@ class NavBar(ft.AppBar):
             ft.ThemeMode.LIGHT if self.page.theme_mode == ft.ThemeMode.DARK else ft.ThemeMode.DARK
         )
         self.page.update()
-
+        self.page.go(self.page.route)
 
     def on_resized(self, e):
-        self.actions = self._build_dynamic_actions()
+        self.actions = self.responsive_menu()
         self.title = self.build_title()
         self.page.update()
     

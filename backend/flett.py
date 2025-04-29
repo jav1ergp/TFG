@@ -15,6 +15,8 @@ def main(page: ft.Page):
             page.go("/login")  # Redirección en caso de ruta desconocida
         page.update()
 
+    page.theme_mode="light"
+    page.bgcolor = ft.Colors.BLACK if page.theme_mode == ft.ThemeMode.DARK else ft.Colors.WHITE,
     page.on_route_change = route_change
     page.go("/login")  # Ruta inicial
 

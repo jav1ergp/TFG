@@ -87,7 +87,7 @@ def logs(page: ft.Page):
     # Layout principal
     logs_layout = ft.Column(
         [
-            ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+            ft.Text("Logs", size=24, weight=ft.FontWeight.BOLD),
             ft.Row(
                 [table],
                 scroll=ft.ScrollMode.AUTO,
@@ -97,7 +97,7 @@ def logs(page: ft.Page):
             page_counter
         ],
         alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
 
     page.appbar = NavBar(page)
@@ -108,7 +108,6 @@ def logs(page: ft.Page):
         "/logs",
         [logs_layout],
         appbar=page.appbar,
-        bgcolor=ft.Colors.WHITE,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         scroll=ft.ScrollMode.AUTO
     )

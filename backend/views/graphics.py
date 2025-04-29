@@ -45,21 +45,19 @@ def graphics_page(page: ft.Page):
     entradas_dia, ocupacion_zonas, tipos_vehiculos = obtener_datos()
     
     layout = ft.Column([
-        ft.Row([GraphOne(tipos_vehiculos), GraphTwo(ocupacion_zonas)]),
-        ft.Row([GraphThree(entradas_dia)])
+        ft.Row([GraphOne(tipos_vehiculos), GraphTwo(ocupacion_zonas)], expand=True),
+        ft.Row([GraphThree(entradas_dia)], expand=True)
     ], spacing=20, expand=True)
 
     return ft.View(
         route="/graphics",
         controls=[
-            ft.Column([
-                ft.Text("Estadísticas del Parking", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
-                layout], 
+            ft.Column(
+                [ft.Text("Estadísticas del Parking", size=30, weight=ft.FontWeight.BOLD), layout], 
                 alignment=ft.MainAxisAlignment.CENTER,
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True
             )
         ],
-        appbar=page.appbar,
-        bgcolor=ft.Colors.BLUE_GREY_50,
+        appbar=page.appbar
     )
