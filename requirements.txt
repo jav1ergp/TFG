@@ -1,3 +1,5 @@
-flet
-bcrypt
-aiohttp
+flask
+pymongo
+opencv-python
+fast-alpr
+ultralytics

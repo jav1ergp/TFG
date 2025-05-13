@@ -1,6 +1,6 @@
 from pymongo import MongoClient
-from models.log import Log
-from config import MONGO_URI
+from backend.models.log import Log
+from config.back_config import MONGO_URI
 
 client = MongoClient(MONGO_URI)
 db = client['parking']

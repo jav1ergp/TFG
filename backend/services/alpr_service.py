@@ -1,6 +1,6 @@
 from fast_alpr import ALPR
 from datetime import datetime
-from models.plate import Plate
+from backend.models.plate import Plate
 
 def init_alpr():
     return ALPR(

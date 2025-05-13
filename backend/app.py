@@ -1,5 +1,11 @@
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.append(str(PROJECT_ROOT))
+
 from flask import Flask
-from routes import plate_detection, plazas, datos, logs
+from backend.api import plate_detection, plazas, datos, logs
 
 
 app = Flask(__name__)

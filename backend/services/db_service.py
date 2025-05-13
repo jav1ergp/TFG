@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 from datetime import datetime
-from models.plate import Plate
-from models.log import Log
-from config import MONGO_URI
+from backend.models.plate import Plate
+from backend.models.log import Log
+from config.back_config import MONGO_URI
 
 # Conexión a la base de datos
 client = MongoClient(MONGO_URI)

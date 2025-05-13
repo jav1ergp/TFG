@@ -1,6 +1,6 @@
 import pymongo
-from models.user import User
-from config import MONGO_URI
+from backend.models.user import User
+from config.back_config import MONGO_URI
 
 client = pymongo.MongoClient(MONGO_URI)
 db = client['parking']

@@ -2,8 +2,8 @@ from threading import Thread
 import cv2
 from ultralytics import YOLO
 import logging
-from . import alpr_service
-from . import db_service
+from backend.services import alpr_service
+from backend.services import db_service
 
 # Configuración de logging para evitar mensajes excesivos
 logging.getLogger('open_image_models.detection.core.yolo_v9.inference').handlers.clear()
