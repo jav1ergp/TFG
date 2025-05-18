@@ -1,36 +1,18 @@
 import flet as ft
 from backend.images import *
+import asyncio
 
 class NavBar(ft.AppBar):
     def __init__(self, page: ft.Page):
         super().__init__()
         self.page = page
         self.bgcolor = ft.colors.LIGHT_BLUE
-        self.leading = self.build_logo()
         self.title = self.build_title()
         self.actions = self.responsive_menu()
         self.dlg = self.confirm_dialog()
         self.page.overlay.append(self.dlg)
         self.page.on_resized = self.on_resized
         self.adaptive = True
-
-    
-    def build_logo(self):
-        return ft.Container(
-            on_click=lambda _: self.page.go("/parking"),
-            margin=ft.margin.only(left=10),
-            content=ft.Row(
-                alignment=ft.MainAxisAlignment.START,
-                controls=[
-                    ft.Container(
-                        content=ft.Image(
-                            src="../images/logougr4.png",
-                        ),
-                        padding=5
-                    )
-                ]
-            )
-        )
     
     def build_title(self):
         if self.page.window.width < 600:
@@ -152,6 +134,7 @@ class NavBar(ft.AppBar):
         )
     
     def toggle_theme(self):
+        self.page.on_resized = self.on_resized
         self.page.theme_mode = (
             ft.ThemeMode.LIGHT if self.page.theme_mode == ft.ThemeMode.DARK else ft.ThemeMode.DARK
         )
@@ -223,7 +206,6 @@ class NavBar(ft.AppBar):
     
     def logout(self, e):
         self.page.session.clear()
-        self.page.client_storage.clear()
         self.dlg.open = False
         self.page.update()
         self.page.go("/login")

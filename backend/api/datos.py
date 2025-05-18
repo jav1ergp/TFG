@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
-from config.back_config import MONGO_URI
+from config.back_config import MONGO_URI, MONGO_PARKING
 
 client = MongoClient(MONGO_URI)
-db = client["parking"]
+db = client[MONGO_PARKING]
 collection = db["vehicles"]
 
 data_bp = Blueprint("data", __name__)
@@ -25,32 +25,32 @@ def get_data():
         
     # Ordenación con filtro
     if sort_field != "date_in":
-        logs = collection.find(query_filter).sort([
+        dates = collection.find(query_filter).sort([
             (sort_field, sort_order),
             ("date_in", -1)
         ])
     else:
-        logs = collection.find(query_filter).sort("date_in", sort_order)
+        dates = collection.find(query_filter).sort("date_in", sort_order)
 
-    logs = logs.skip(skip).limit(limit)
+    dates = dates.skip(skip).limit(limit)
     
     # Contar total de documentos CON filtro
     total = collection.count_documents(query_filter)
     
-    logs_list = []
-    for log in logs:
-        logs_list.append({
-            "id": str(log["_id"]),
-            "plate": log.get("plate"),
-            "confidence": log.get("confidence"),
-            "vehicle": log.get("vehicle"),
-            "zona": log.get("zona"),
-            "date_in": log.get("date_in"),
-            "date_out": log.get("date_out", "Pendiente")
+    dates_list = []
+    for date in dates:
+        dates_list.append({
+            "id": str(date["_id"]),
+            "plate": date.get("plate"),
+            "confidence": date.get("confidence"),
+            "vehicle": date.get("vehicle"),
+            "zona": date.get("zona"),
+            "date_in": date.get("date_in"),
+            "date_out": date.get("date_out", "Pendiente")
         })
 
     return jsonify({
-        "data": logs_list,
+        "data": dates_list,
         "total": total,
         "page": page,
         "limit": limit

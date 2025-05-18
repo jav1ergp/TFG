@@ -21,7 +21,7 @@ def logs(page: ft.Page):
                     ft.DataCell(ft.Text(log.get("action"), color=ft.Colors.WHITE)),
                     ft.DataCell(ft.Text(log.get("description"), color=ft.Colors.WHITE)),
                     ft.DataCell(ft.Text(log.get("plate"), color=ft.Colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("zone"), color=ft.Colors.WHITE)),
+                    ft.DataCell(ft.Text(log.get("zona"), color=ft.Colors.WHITE)),
                     ft.DataCell(ft.Text(log.get("timestamp"), color=ft.Colors.WHITE)),  
                 ]
             ))
@@ -101,7 +101,7 @@ def logs(page: ft.Page):
     )
 
     page.appbar = NavBar(page)
-    # Cargar datos al iniciar la vista
+    # Datos primera vez
     update_data()
 
     return ft.View(

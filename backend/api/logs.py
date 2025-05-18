@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
-from config.back_config import MONGO_URI
+from config.back_config import MONGO_URI, MONGO_PARKING
 
 client = MongoClient(MONGO_URI)
-db = client['parking']
+db = client[MONGO_PARKING]
 log_collection = db['logs']
 
 logs_bp = Blueprint("logs", __name__)
@@ -19,7 +19,6 @@ def get_logs():
     
     total = log_collection.count_documents(query_filter)
 
-    # Obtener los registros con paginación y ordenación
     logs = log_collection.find(query_filter).sort("timestamp", -1).skip(skip).limit(limit)
     
     logs_list = []
@@ -29,9 +28,7 @@ def get_logs():
             "action": log["action"],
             "description": log["description"],
             "plate": log["plate"],
-            "zone": log["zone"],
-            "date_in": log["date_in"],
-            "date_out": log.get("date_out"),
+            "zona": log["zona"],
             "timestamp": log["timestamp"]
         })
 

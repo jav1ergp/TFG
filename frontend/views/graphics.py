@@ -45,8 +45,8 @@ def graphics_page(page: ft.Page):
     entradas_dia, ocupacion_zonas, tipos_vehiculos = obtener_datos()
     
     layout = ft.Column([
-        ft.Row([GraphOne(tipos_vehiculos), GraphTwo(ocupacion_zonas)], expand=True),
-        ft.Row([GraphThree(entradas_dia)], expand=True)
+        ft.Row([Graf1(tipos_vehiculos), Graf2(ocupacion_zonas)], expand=True),
+        ft.Row([Graf3(entradas_dia)], expand=True)
     ], spacing=20, expand=True)
 
     return ft.View(

@@ -1,20 +1,18 @@
 from pymongo import MongoClient
 from datetime import datetime
-from config.back_config import MONGO_URI
+from config.back_config import MONGO_URI, MONGO_PARKING
 
 client = MongoClient(MONGO_URI)
-db = client['parking']
+db = client[MONGO_PARKING]
 log_collection = db['logs']
 
     
 class Log:
-    def __init__(self, action, description, plate, zone, date_in, date_out=None, timestamp=None):
+    def __init__(self, action, description, plate, zona, timestamp=None):
         self.action = action
         self.description = description
         self.plate = plate
-        self.zone = zone
-        self.date_in = date_in
-        self.date_out = date_out
+        self.zona = zona
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     @classmethod
@@ -23,16 +21,10 @@ class Log:
             "action": log.action,
             "description": log.description,
             "plate": log.plate,
-            "zone": log.zone,
-            "date_in": log.date_in,
-            "date_out": log.date_out,
+            "zona": log.zona,
             "timestamp": log.timestamp
         }
         
         log_collection.insert_one(log_data)
         
         return log
-
-    @classmethod
-    def clear_logs(cls):
-        log_collection.delete_many({})

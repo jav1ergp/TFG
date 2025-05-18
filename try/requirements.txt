@@ -1,3 +1,21 @@
-flet
-bcrypt
-aiohttp
+# Web Framework  
+flask==3.0.3
+  
+# UI Framework  
+flet==0.27.6  
+  
+# Database  
+pymongo==4.10.1  
+  
+# Computer Vision & License Plate Recognition  
+opencv-python==4.10.0.84  
+ultralytics==8.3.3  
+fast-alpr==0.1.2
+  
+# HTTP Requests  
+requests==2.32.3  
+aiohttp==3.10.7  
+  
+# Utilities  
+datetime==5.5  
+asyncio==3.4.3  

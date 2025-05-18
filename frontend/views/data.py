@@ -19,15 +19,15 @@ def data(page: ft.Page):
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
         table.rows.clear()
-        for log in registros:
+        for data in registros:
             table.rows.append(ft.DataRow(
                 cells=[
-                    ft.DataCell(ft.Text(log.get("vehicle"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("plate"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(str(log.get("confidence")), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("zona"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("date_in"), color=ft.colors.WHITE)),
-                    ft.DataCell(ft.Text(log.get("date_out", "Pendiente"), color=ft.colors.WHITE)),
+                    ft.DataCell(ft.Text(data.get("vehicle"), color=ft.colors.WHITE)),
+                    ft.DataCell(ft.Text(data.get("plate"), color=ft.colors.WHITE)),
+                    ft.DataCell(ft.Text(str(data.get("confidence")), color=ft.colors.WHITE)),
+                    ft.DataCell(ft.Text(data.get("zona"), color=ft.colors.WHITE)),
+                    ft.DataCell(ft.Text(data.get("date_in"), color=ft.colors.WHITE)),
+                    ft.DataCell(ft.Text(data.get("date_out", "Pendiente"), color=ft.colors.WHITE)),
                 ]
             ))
         page.update()
@@ -127,7 +127,7 @@ def data(page: ft.Page):
     # Layout principal
     logs_layout = ft.Column(
         [
-            ft.Text("Data", size=24, weight=ft.FontWeight.BOLD),
+            ft.Text("Datos", size=24, weight=ft.FontWeight.BOLD),
             ft.Row(
                 [table],
                 scroll=ft.ScrollMode.AUTO,
@@ -142,7 +142,7 @@ def data(page: ft.Page):
     )
 
     page.appbar = NavBar(page)
-    # Ejecuta la función para llenar la tabla la primera vez
+    # Datos primera vez
     update_data()
 
     return ft.View(

@@ -3,7 +3,7 @@ from backend.services.db_users import is_admin, verify_login
 
 def login(page):
     def on_login_click(e):
-        email = gmail_field.value
+        email = email_field.value
         password = pass_field.value
         
         if email and password:
@@ -14,7 +14,6 @@ def login(page):
                 }
                 
                 page.session.set("user", user_data)
-                page.client_storage.set("user", user_data)
                 
                 page.go("/home")
             else:
@@ -29,7 +28,10 @@ def login(page):
         page.go("/register") 
 
     logo = ft.Image(
-        src="https://webmailest.ugr.es/skins/elastic/images/logougr.png?s=1718096294",
+        src="https://www.ugr.es/themes/custom/ugr/ugr-horizontal-color.svg",
+        width=100,
+        height=100,
+        fit=ft.ImageFit.SCALE_DOWN,
     )
 
     logo_container = ft.Container(
@@ -37,7 +39,7 @@ def login(page):
         margin=ft.margin.only(top=40)
     )
     
-    gmail_field = ft.TextField(
+    email_field = ft.TextField(
         label="Nombre de usuario",
         width=300,
         color=ft.Colors.BLACK,
@@ -109,7 +111,7 @@ def login(page):
             ft.Column(
                 [
                     logo_container,
-                    gmail_field,
+                    email_field,
                     pass_field,
                     login_button,
                     lbl_register,

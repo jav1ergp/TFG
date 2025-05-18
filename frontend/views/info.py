@@ -116,6 +116,7 @@ class InfoView:
 def info_page(page: ft.Page):
     info_view = InfoView(page)
     page.bgcolor = ft.colors.BLACK87
+    
 
     async def on_view_loaded():
         info_view.update_font_sizes(page)
@@ -129,10 +130,10 @@ def info_page(page: ft.Page):
         if e.key == "Escape":
             page.go("/home")
     page.on_keyboard_event = on_key
-            
+    page.theme_mode="dark"
     return ft.View(
         "/info",
         controls=[info_view.control],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        vertical_alignment=ft.MainAxisAlignment.CENTER
+        vertical_alignment=ft.MainAxisAlignment.CENTER,
     )

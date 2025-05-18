@@ -43,7 +43,7 @@ def process_camera(source, url):
         
         # Procesar cada detección
         for result in results[0].boxes:
-            if result.cls in [2, 3]: # 2 COCHES, 3 = MOTOS
+            if result.cls in [2, 3]:
                 class_id = int(result.cls)
                 
                 if class_id == 2:
@@ -56,12 +56,6 @@ def process_camera(source, url):
                 if plate is not None:
                     db_service.handle_plate(plate, source)
                     
-                    #if source == "Entrada":
-                    #    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-                    #if source == "Salida":
-                    #    print("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
-                    #if source == "Zona":
-                    #    print("VCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC")
     cap.release()
     
         

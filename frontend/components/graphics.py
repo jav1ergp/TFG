@@ -7,7 +7,7 @@ style_frame: dict = {
     "border_radius": 10,
 }
 
-class GraphOne(ft.Container):
+class Graf1(ft.Container):
     def __init__(self, tipos_vehiculos):
         super().__init__(**style_frame)
         self.normal_radius = 110
@@ -41,14 +41,15 @@ class GraphOne(ft.Container):
             expand=True
         )
     
-class GraphTwo(ft.Container):
+class Graf2(ft.Container):
     def __init__(self, ocupacion_zonas):
         super().__init__(**style_frame)
         self.normal_bar_width = 40
         self.border_radius = 20
         title = ft.Text("Vehiculos por Zona", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK)
 
-        items_zona = (ocupacion_zonas.items())
+        items_zona = sorted(ocupacion_zonas.items(), key=lambda x: x[0])
+
         # Crear grupos de barras
         bar_groups = []
         for i, (zona, count) in enumerate(items_zona):
@@ -114,7 +115,7 @@ class GraphTwo(ft.Container):
                     ],
         )
         
-class GraphThree(ft.Container):
+class Graf3(ft.Container):
     def __init__(self, entradas_dia):
         super().__init__(**style_frame)
         title = ft.Text("Entradas por Día", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK)
@@ -126,6 +127,7 @@ class GraphThree(ft.Container):
         x_labels = []
 
         y_max = max(conteo_por_dia.values()) + 2
+
         y_labels = []
         for y in range(0, y_max + 1, 5):
             y_labels.append(ft.ChartAxisLabel(value=y, label=ft.Text(str(y), color=ft.Colors.BLACK)))
@@ -146,7 +148,7 @@ class GraphThree(ft.Container):
                     data_points=data_points,
                     stroke_width=5,
                     curved=True,
-                    gradient=ft.LinearGradient([ft.Colors.CYAN, ft.Colors.WHITE])
+                    color=ft.Colors.CYAN
                 )
             ],
             left_axis=ft.ChartAxis(

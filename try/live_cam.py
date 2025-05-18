@@ -1,15 +1,5 @@
 import cv2
 from fast_alpr import ALPR
-from pymongo import MongoClient
-from datetime import datetime
-import time
-from flask import Flask, Response, jsonify
-
-# Configuración de MongoDB
-MONGO_URI = "mongodb://localhost:27017/"
-client = MongoClient(MONGO_URI)
-db = client['alpr']  # Nombre de la base de datos
-collection = db['plates']  # Nombre de la colección
 
 # Inicializar ALPR
 alpr = ALPR(
@@ -19,61 +9,49 @@ alpr = ALPR(
     detector_providers=['CPUExecutionProvider']
 )
 
-# Inicializar la cámara
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) 
-if not cap.isOpened():
-    print("Error: No se pudo acceder a la cámara.")
-    exit()
+def procesar_imagen(ruta_imagen, mostrar=True, guardar=False, ruta_salida="salida.jpg"):
+    # Leer la imagen
+    imagen = cv2.imread(ruta_imagen)
+    if imagen is None:
+        print("No se pudo leer la imagen.")
+        return
 
-print("Presiona 'q' para salir.")
+    # Procesar la imagen con ALPR
+    resultados = alpr.predict(imagen)
 
-try:
-    while True:
-        # Capturar un frame de la cámara
-        ret, frame = cap.read()
-        if not ret:
-            print("Error: No se pudo capturar el frame.")
-            break
+    # Dibujar las predicciones sobre la imagen
+    imagen_anotada = alpr.draw_predictions(imagen)
 
-        # Procesar el frame con ALPR
-        alpr_results = alpr.predict(frame)
+    # Añadir texto con la matrícula si hay resultado
+    if resultados:
+        ocr_resultado = resultados[0].ocr
+        texto_matricula = ocr_resultado.text
+        confianza = round(ocr_resultado.confidence, 2)
 
-        # Extraer texto de la matrícula y confianza
-        license_plate_text = ""
-        confidence = 0.0
-        if alpr_results:  # Verificar si hay resultados
-            ocr_result = alpr_results[0].ocr
-            license_plate_text = ocr_result.text
-            confidence = round(ocr_result.confidence, 2)
+        # Coordenadas del recuadro
+        x1, y1, x2, y2 = resultados[0].bbox
+        etiqueta = f"{texto_matricula} ({confianza})"
 
-        # Dibujar predicciones en el frame
-        annotated_frame = alpr.draw_predictions(frame)
+        # Dibujar etiqueta
+        cv2.rectangle(imagen_anotada, (x1, y1 - 30), (x2, y1), (0, 255, 0), -1)
+        cv2.putText(imagen_anotada, etiqueta, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
 
-        # Mostrar el frame con las predicciones
-        cv2.imshow("ALPR Result", annotated_frame)
+        print(f"Matrícula detectada: {texto_matricula} (Confianza: {confianza})")
+    else:
+        print("No se detectó ninguna matrícula.")
 
-        # Guardar los datos en MongoDB si se detectó una matrícula
-        if license_plate_text and confidence > 0.9:
-            current_time = datetime.now()
-            current_time_str = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    # Mostrar la imagen si se desea
+    if mostrar:
+        cv2.imshow("Resultado ALPR", imagen_anotada)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-            plate_data = {
-                "plate": license_plate_text,
-                "confidence": confidence,
-                "date_in": current_time_str,
-                "date_out": None
-            }
-            collection.insert_one(plate_data)
-            print(f"Matrícula detectada: {license_plate_text} (Confianza: {confidence})")
-          
-        # Esperar 2 segundos antes de capturar el siguiente frame
-        if  0xFF == ord('q'):
-            break
+    # Guardar la imagen si se desea
+    if guardar:
+        cv2.imwrite(ruta_salida, imagen_anotada)
+        print(f"Imagen guardada en {ruta_salida}")
 
-except KeyboardInterrupt:
-    print("\nInterrupción por teclado detectada. Saliendo...")
 
-finally:
-    # Liberar recursos
-    cap.release()
-    cv2.destroyAllWindows()
+# Ejemplo de uso
+if __name__ == "__main__":
+    procesar_imagen("ejemplo.jpg", mostrar=True, guardar=True)

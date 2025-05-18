@@ -95,7 +95,7 @@ class ParkingView:
                             self.zone_b.update_status(data.get("salida_coche"), data.get("salida_moto"))
             except Exception as e:
                 print("Error al obtener datos de la API:", e)
-            await asyncio.sleep(5)
+            await asyncio.sleep(1)
 
 
 
@@ -103,7 +103,7 @@ def parking_page(page: ft.Page):
     parking_view = ParkingView()
     page.add(parking_view)
     page.appbar = NavBar(page)
-    
+
     switch_button = ft.IconButton(
         icon=ft.icons.VISIBILITY,
         tooltip="Vista visual",

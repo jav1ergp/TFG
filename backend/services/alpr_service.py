@@ -19,8 +19,7 @@ def detect_plate(frame, vehicle):
         license_plate_text = ocr_result.text
         confidence = round(ocr_result.confidence, 2)
         date_in = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        zona = "entrada"
-        print("AAAAAAAAA", license_plate_text, confidence)
+        zona = "Zona 1"
         
         if Plate.is_valid_plate(license_plate_text) and confidence > 0.9:
             return Plate(license_plate_text, confidence, vehicle, date_in, zona)

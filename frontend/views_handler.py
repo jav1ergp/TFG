@@ -7,9 +7,9 @@ from frontend.views.logs import logs
 from frontend.views.info import info_page
 from frontend.views.graphics import graphics_page
 
-def get_page(page, current_user_email):
+def get_page(page):
     route = page.route
-
+    
     match route:
         case "/login":
             return login(page)
