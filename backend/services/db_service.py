@@ -1,8 +1,9 @@
 from pymongo import MongoClient
 from datetime import datetime
+import requests
 from backend.models.plate import Plate
 from backend.models.log import Log
-from config.back_config import MONGO_URI, MONGO_PARKING
+from config.config import MONGO_URI, MONGO_PARKING, BOT_TOKEN, CHAT_ID
 
 client = MongoClient(MONGO_URI)
 db = client[MONGO_PARKING]
@@ -76,21 +77,35 @@ def handle_plate(plate, source):
                 Log.save_log(log)
         else:
             # Si no hay registro previo en la base de datos (no está registrada), es un error
-            print(f"Error: La matricula {plate.license_plate_text} no está registrada, no puede salir.")
-            log = Log(
-                action="Error de cambio de zona",
-                description=f"Intento de cambiar zona para matricula no registrada",
-                plate=plate.license_plate_text,
-                zona="Zona 2 -> Fuera",
-                timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            )
-            Log.save_log(log)
+            similar_plate = find_similar_plate(plate.license_plate_text, "fuera", plate.vehicle) 
+            
+            if similar_plate:
+                update_plate_date_out(similar_plate["_id"], "fuera")
+                log = Log(
+                    action="Matricula erronea detectada",
+                    description=f"Vehiculo con la matricula {similar_plate["plate"]} ha salido del parking, por la matricula erroneamente detectada {plate.license_plate_text}",
+                    plate=similar_plate["plate"],
+                    zona="Zona 2 -> fuera",
+                    timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                )
+                Log.save_log(log)
+            
+            else:
+                send_telegram_notis(plate.license_plate_text, plate.vehicle, source)
+                log = Log(
+                    action="Error detección matricula",
+                    description=f"Se ha detectado una matricula dentro del parking que no se ha detectado en la entrada",
+                    plate=plate.license_plate_text,
+                    zona="Zona 1 -> Zona 2",
+                    timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                )
+                Log.save_log(log)
             
     elif source == "Zona":
         if latest_record:
-            if latest_record["zona"] == "Zona 1":
+            if latest_record["date_out"] is None and latest_record["zona"] == "Zona 1":
                 update_plate_zona(latest_record["_id"], "Zona 2")
-                print(f"La matricula {plate.license_plate_text} ha cambiado de entrada a salida.")
+                
                 log = Log(
                     action="Vehiculo ha cambiado de zona",
                     description=f"Vehiculo con la matricula {plate.license_plate_text} ha cambiado de zona",
@@ -99,27 +114,42 @@ def handle_plate(plate, source):
                     timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 )
                 Log.save_log(log)
+                
             else:
-                print(f"La matricula {plate.license_plate_text} ya está en salida o ha salido.")
                 log = Log(
-                action="Error de cambio de zona",
-                description=f"Vehiculo con la matricula {plate.license_plate_text} ya está en salida o ha salido",
-                plate=plate.license_plate_text,
-                zona="Zona 1 -> Zona 2",
-                timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            )
-            Log.save_log(log)
+                    action="Error de cambio de zona",
+                    description=f"Vehiculo con la matricula {plate.license_plate_text} ya está en salida o ha salido",
+                    plate=plate.license_plate_text,
+                    zona="Zona 1 -> Zona 2",
+                    timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                )
+                Log.save_log(log)
+                
         else:
-            print(f"Error: La matricula {plate.license_plate_text} no está registrada en el sistema.")
-            log = Log(
-                action="Error de cambio de zona",
-                description=f"Intento de cambiar zona para matricula no registrada",
-                plate=plate.license_plate_text,
-                zona="Zona 1 -> Zona 2",
-                timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            )
-            Log.save_log(log)
+            similar_plate = find_similar_plate(plate.license_plate_text, "Zona 2", plate.vehicle)  
+            if similar_plate:
+                update_plate_date_out(similar_plate["_id"], "Zona 2")
+                log = Log(
+                    action="Matricula erronea detectada",
+                    description=f"Vehiculo con la matricula {similar_plate["plate"]} ha cambiado de zona, por la matricula erroneamente detectada {plate.license_plate_text}",
+                    plate=similar_plate["plate"],
+                    zona="Zona 1 -> Zona 2",
+                    timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                )
+                Log.save_log(log)
+            
+            else:
+                send_telegram_notis(plate.license_plate_text, plate.vehicle, source)
+                log = Log(
+                    action="Error detección matricula",
+                    description=f"Se ha detectado una matricula dentro del parking que no se ha detectado en la entrada",
+                    plate=plate.license_plate_text,
+                    zona="Zona 1 -> Zona 2",
+                    timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                )
+                Log.save_log(log)
 
+             
 
 def get_latest_plate_record(license_plate_text):
     return collection.find_one(
@@ -169,3 +199,75 @@ def update_plate_zona(record_id, new_zona):
     )
     
     Log.save_log(log)
+    
+def find_similar_plate(plate_text, zona, vehicle):
+    if zona == "Zona 2":
+        previous_zone = "Zona 1"
+    elif zona == "fuera":
+        previous_zone = "Zona 2"
+    else:
+        return None
+    
+    plates_in_previous_zone = list(collection.find(
+        {"zona": previous_zone, "date_out": None, "vehicle": vehicle}
+    ))
+      
+    if not plates_in_previous_zone:
+        return None
+    
+    best_match = None
+    best_score = 5
+      
+    for plate in plates_in_previous_zone:
+        score = similar_score(plate_text, plate["plate"])
+        
+        if score > best_score:
+            best_score = score
+            best_match = plate
+            break
+            
+    return best_match
+
+def similar_score(plate1, plate2):
+    same_chars = 0
+    not_same = 0
+
+    for i in range(len(plate1)):
+        if plate1[i] == plate2[i]:
+            same_chars += 1
+        else:
+            not_same += 1
+            if not_same == 2:
+                break        
+    
+    return same_chars
+
+
+def send_telegram_notis(plate_text, vehicle_type, source):  
+    bot_token = BOT_TOKEN 
+    chat_id = CHAT_ID
+      
+    message = f"""  
+        Se ha detectado una matricula no registrada en el sistema
+    🚗 *Matrícula Detectada*  
+    📋 Matrícula: `{plate_text}`  
+    🚙 Vehículo: {vehicle_type}
+    📷 Cámara: {source}  
+    🕐 Fecha: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  
+    """  
+      
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"  
+    data = {  
+        "chat_id": chat_id,  
+        "text": message,  
+        "parse_mode": "Markdown"  
+    }  
+      
+    try:  
+        response = requests.post(url, data=data)  
+        if response.status_code == 200:  
+            print(f"Telegram enviado para matrícula {plate_text}")  
+        else:  
+            print(f"Error enviando Telegram: {response.text}")  
+    except Exception as e:  
+        print(f"Error enviando Telegram: {e}")

@@ -2,7 +2,7 @@ import flet as ft
 from aiohttp import ClientSession
 import asyncio
 from components.navbar import NavBar
-from config.front_config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO, API_URL_SPOTS
+from config.config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO, API_URL_SPOTS
 
 
 class ParkingZone:
@@ -58,13 +58,16 @@ class ParkingView:
 
     def _build_view(self):
         return ft.Column(
+            expand=True,
             controls=[
                 ft.Container(
                     ft.Text("PLAZAS LIBRES", size=30, weight=ft.FontWeight.BOLD),
                 ),
                 ft.Container(
+                    expand=True,
                     margin=60,
                     content=ft.ResponsiveRow(
+                        expand=True,
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
                             ft.Container(

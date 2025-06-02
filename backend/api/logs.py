@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
-from config.back_config import MONGO_URI, MONGO_PARKING
+from config.config import MONGO_URI, MONGO_PARKING
 
 client = MongoClient(MONGO_URI)
 db = client[MONGO_PARKING]

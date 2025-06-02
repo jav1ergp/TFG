@@ -1,7 +1,7 @@
 import flet as ft
 from collections import Counter
 
-style_frame: dict = {
+same_style: dict = {
     "expand": True,
     "bgcolor": ft.Colors.WHITE,
     "border_radius": 10,
@@ -9,8 +9,8 @@ style_frame: dict = {
 
 class Graf1(ft.Container):
     def __init__(self, tipos_vehiculos):
-        super().__init__(**style_frame)
-        self.normal_radius = 110
+        super().__init__(**same_style)
+        self.normal_radius = 80
         self.normal_badge_size = 50
         total_vehiculos = sum(tipos_vehiculos.values())
         title = ft.Text("Tipos de Vehículos", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK)
@@ -33,6 +33,7 @@ class Graf1(ft.Container):
             ],
             sections_space=0,
             center_space_radius=0,
+            expand=True,
         )
 
         self.content = ft.Column(
@@ -43,7 +44,7 @@ class Graf1(ft.Container):
     
 class Graf2(ft.Container):
     def __init__(self, ocupacion_zonas):
-        super().__init__(**style_frame)
+        super().__init__(**same_style)
         self.normal_bar_width = 40
         self.border_radius = 20
         title = ft.Text("Vehiculos por Zona", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK)
@@ -117,7 +118,7 @@ class Graf2(ft.Container):
         
 class Graf3(ft.Container):
     def __init__(self, entradas_dia):
-        super().__init__(**style_frame)
+        super().__init__(**same_style)
         title = ft.Text("Entradas por Día", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK)
 
         conteo_por_dia = Counter(entradas_dia)
@@ -135,12 +136,13 @@ class Graf3(ft.Container):
         for i, dia in enumerate(dias_ordenados):
             data_points.append(ft.LineChartDataPoint(i, conteo_por_dia[dia]))
 
-            x_labels.append(
-                ft.ChartAxisLabel(
-                    value=i,
-                    label=ft.Text(dia, color=ft.Colors.BLACK),    
-                ),
-            )
+            if i % 2 == 0:  # Mostrar etiqueta cada dos días
+                x_labels.append(
+                    ft.ChartAxisLabel(
+                        value=i,
+                        label=ft.Text(dia, color=ft.Colors.BLACK),
+                    ),
+                )
             
         line_chart = ft.LineChart(
             data_series=[

@@ -1,7 +1,7 @@
 import flet as ft
 import requests
 from frontend.components.navbar import NavBar
-from config.front_config import API_URL_DATA
+from config.config import API_URL_DATA
 
 
 def data(page: ft.Page):
@@ -10,11 +10,7 @@ def data(page: ft.Page):
     sort_field = "date_in"
     sort_order = 1
     search_term = ""
-    
-    if page.window.width < 600:
-        limit = 7
-    else:
-        limit = 10
+    limit = 7
         
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
@@ -65,7 +61,7 @@ def data(page: ft.Page):
         update_data()
    
     # Función de búsqueda por matrícula
-    def search_by_plate(e):
+    def search_plate(e):
         nonlocal search_term, current_page
         search_term = search_field.value.strip().upper()
         current_page = 1
@@ -84,13 +80,12 @@ def data(page: ft.Page):
             current_page -= 1
             update_data()
     
-    
     # Crear la tabla
     table = ft.DataTable(
         bgcolor=ft.colors.BLUE_GREY_700,
         border=ft.border.all(2, ft.colors.BLUE_GREY_200),
         columns=[
-            ft.DataColumn(ft.Text("Vehículo", color=ft.colors.WHITE), on_sort=lambda e: sort_data(e), data={"field": "vehicle"}),
+            ft.DataColumn(ft.Text("Vehículo", color=ft.colors.WHITE), on_sort=lambda e: sort_data(e),   data={"field": "vehicle"}),
             ft.DataColumn(ft.Text("Matrícula", color=ft.colors.WHITE)),
             ft.DataColumn(ft.Text("Confianza", color=ft.colors.WHITE)),
             ft.DataColumn(ft.Text("Zona", color=ft.colors.WHITE), on_sort=lambda e: sort_data(e), data={"field": "zona"}),
@@ -104,7 +99,7 @@ def data(page: ft.Page):
     search_field = ft.TextField(
         label="Buscar por matrícula",
         width=250,
-        on_submit=search_by_plate
+        on_submit=search_plate
     )
 
     # Botón de búsqueda
@@ -113,15 +108,15 @@ def data(page: ft.Page):
         color=ft.colors.WHITE,
         bgcolor=ft.colors.BLUE,
         width=70,
-        on_click=search_by_plate
+        on_click=search_plate
     )
 
     # Botón para actualizar los datos
-    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.GREEN, on_click=lambda _: update_data())
+    btn_refresh = ft.ElevatedButton("Actualizar", icon=ft.icons.REFRESH, color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, on_click=lambda _: update_data())
 
     # Botones de paginación
-    btn_prev = ft.ElevatedButton("Anterior", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
-    btn_next = ft.ElevatedButton("Siguiente", color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=next_page)
+    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
+    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=next_page)
 
     page_counter = ft.Text(f"Página {current_page} de {total_pages}")
     # Layout principal
@@ -145,9 +140,19 @@ def data(page: ft.Page):
     # Datos primera vez
     update_data()
 
+    def on_resize(e):
+        navbar = page.appbar 
+        navbar.title = navbar.build_title()
+        navbar.actions = navbar.responsive_menu()
+        update_data()
+        page.update()
+            
+
+    page.on_resized = on_resize
+    
     return ft.View(
         "/data",
-        [logs_layout],
+        controls=[logs_layout],
         appbar=page.appbar,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         scroll=ft.ScrollMode.AUTO

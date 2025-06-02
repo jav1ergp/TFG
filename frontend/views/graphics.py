@@ -2,7 +2,7 @@ import flet as ft
 import requests
 from collections import defaultdict, Counter
 from datetime import datetime
-from config.front_config import API_URL_DATA
+from config.config import API_URL_DATA
 from frontend.components.navbar import NavBar
 from frontend.components.graphics import *
 

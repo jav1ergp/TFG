@@ -43,7 +43,8 @@ def process_camera(source, url):
         
         # Procesar cada detección
         for result in results[0].boxes:
-            if result.cls in [2, 3]:
+            confidence = float(result.conf)
+            if result.cls in [2, 3] and confidence >= 0.85:
                 class_id = int(result.cls)
                 
                 if class_id == 2:

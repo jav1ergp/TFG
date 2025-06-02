@@ -1,7 +1,7 @@
 import flet as ft
 from aiohttp import ClientSession
 import asyncio
-from config.front_config import API_URL_SPOTS
+from config.config import API_URL_SPOTS
 from datetime import datetime
 
 class InfoView:
@@ -30,6 +30,7 @@ class InfoView:
                         controls=[self.zona1, self.z1_car, ft.Container(width=30), self.z1_moto],
                         alignment=ft.MainAxisAlignment.CENTER
                     ),
+                    ft.Container(height=60),
                     ft.Row(
                         controls=[self.zona2, self.z2_car, ft.Container(width=30), self.z2_moto],
                         alignment=ft.MainAxisAlignment.CENTER
@@ -50,6 +51,7 @@ class InfoView:
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     ),
+                    ft.Container(height=50),
                     ft.Column(
                         controls=[
                             self.zona2,
@@ -86,13 +88,13 @@ class InfoView:
         now = datetime.now()
         self.date_time.value = now.strftime("%d %B %Y, %H:%M")
         
-    def update_field(self, field, label, value):
+    def update_input(self, input, label, value):
         if value == 0:
-            field.value = f"{label} COMPLETO"
-            field.color = ft.colors.RED
+            input.value = f"{label} COMPLETO"
+            input.color = ft.colors.RED
         else:
-            field.value = f"{label} {value}"
-            field.color = ft.colors.GREEN_ACCENT
+            input.value = f"{label} {value}"
+            input.color = ft.colors.GREEN_ACCENT
 
     async def update_status(self, page: ft.Page):
         while page.route == "/info":
@@ -102,10 +104,10 @@ class InfoView:
                         if response.status == 200:
                             data = await response.json()
 
-                            self.update_field(self.z1_car, "coches:", data.get('entrada_coche', 0))
-                            self.update_field(self.z1_moto, "motos:", data.get('entrada_moto', 0))
-                            self.update_field(self.z2_car, "coches:", data.get('salida_coche', 0))
-                            self.update_field(self.z2_moto, "motos:", data.get('salida_moto', 0))
+                            self.update_input(self.z1_car, "coches:", data.get('entrada_coche', 0))
+                            self.update_input(self.z1_moto, "motos:", data.get('entrada_moto', 0))
+                            self.update_input(self.z2_car, "coches:", data.get('salida_coche', 0))
+                            self.update_input(self.z2_moto, "motos:", data.get('salida_moto', 0))
 
                             self.update_date_time()
                             self.page.update()
@@ -115,25 +117,30 @@ class InfoView:
 
 def info_page(page: ft.Page):
     info_view = InfoView(page)
-    page.bgcolor = ft.colors.BLACK87
-    
-
     async def on_view_loaded():
         info_view.update_font_sizes(page)
     page.run_task(on_view_loaded)
     
-    page.on_resized = lambda e: (info_view.update_font_sizes(page), info_view.control.update())  # actualiza vista
+      # actualiza vista
     page.run_task(info_view.update_status, page)
 
+    def on_resize(e):
+        info_view.update_font_sizes(page)
+        info_view.control = info_view.build_view()
+        page.views[-1].controls = [info_view.control]
+        page.update()
+
+    page.on_resized = on_resize
     
     def on_key(e: ft.KeyboardEvent):
         if e.key == "Escape":
             page.go("/home")
+            
     page.on_keyboard_event = on_key
-    page.theme_mode="dark"
     return ft.View(
         "/info",
         controls=[info_view.control],
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         vertical_alignment=ft.MainAxisAlignment.CENTER,
+        bgcolor=ft.colors.BLACK87
     )

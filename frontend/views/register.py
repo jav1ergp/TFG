@@ -37,9 +37,10 @@ def register(page):
         page.go("/login") 
 
     logo = ft.Image(
-        src="https://webmailest.ugr.es/skins/elastic/images/logougr.png?s=1718096294",
+        src="https://raw.githubusercontent.com/jav1ergp/TFG/main/backend/images/ugr-horizontal-color.svg",
+        width=100,
+        height=100,
     )
-
     logo_container = ft.Container(
         content=logo,
         margin=ft.margin.only(top=40)

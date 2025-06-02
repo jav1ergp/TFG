@@ -28,8 +28,8 @@ def login(page):
         page.go("/register") 
 
     logo = ft.Image(
-        src="https://www.ugr.es/themes/custom/ugr/ugr-horizontal-color.svg",
-        width=100,
+        src="https://raw.githubusercontent.com/jav1ergp/TFG/refs/heads/main/backend/images/ugr-horizontal-color.svg",
+        width=90,
         height=100,
         fit=ft.ImageFit.SCALE_DOWN,
     )
@@ -40,7 +40,7 @@ def login(page):
     )
     
     email_field = ft.TextField(
-        label="Nombre de usuario",
+        label="Correo electrónico",
         width=300,
         color=ft.Colors.BLACK,
         prefix_icon=ft.Icon(ft.Icons.PERSON, color=ft.Colors.BLACK)

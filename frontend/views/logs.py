@@ -1,16 +1,12 @@
 import flet as ft
 import requests
 from frontend.components.navbar import NavBar
-from config.front_config import API_URL_LOGS
+from config.config import API_URL_LOGS
 
 def logs(page: ft.Page):
     current_page = 1
     total_pages = 1
-    
-    if page.window.width < 600:
-        limit = 7
-    else:
-        limit = 10
+    limit = 7
     
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
@@ -27,8 +23,8 @@ def logs(page: ft.Page):
             ))
         page.update()
 
-    # Función para obtener datos desde la API con paginación
-    def update_data(page_num=1):
+    # Funcion datos API
+    def update_data():
         nonlocal current_page, total_pages
         params = {
             "page": current_page,
@@ -100,10 +96,20 @@ def logs(page: ft.Page):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
 
-    page.appbar = NavBar(page)
     # Datos primera vez
     update_data()
-
+    
+    def on_resize(e):
+        navbar = page.appbar 
+        navbar.title = navbar.build_title()
+        navbar.actions = navbar.responsive_menu()
+        update_data()
+        page.update()
+        
+    page.appbar = NavBar(page)
+    page.on_resized = on_resize
+    
+    
     return ft.View(
         "/logs",
         [logs_layout],

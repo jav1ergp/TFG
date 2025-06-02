@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
-from config.back_config import MONGO_URI, MONGO_PARKING
+from config.config import MONGO_URI, MONGO_PARKING
 
 client = MongoClient(MONGO_URI)
 db = client[MONGO_PARKING]
@@ -15,6 +15,7 @@ def get_data():
     sort_field = request.args.get("sort", "date_in")
     sort_order = int(request.args.get("order", -1))
     search = request.args.get("search", None)
+    date_out_filter = request.args.get("date_out", None)  
 
     skip = (page - 1) * limit
 
@@ -22,6 +23,9 @@ def get_data():
     query_filter = {}
     if search:
         query_filter["plate"] = search
+        
+    if date_out_filter == "null":  
+        query_filter["date_out"] = None  
         
     # Ordenación con filtro
     if sort_field != "date_in":
@@ -46,7 +50,7 @@ def get_data():
             "vehicle": date.get("vehicle"),
             "zona": date.get("zona"),
             "date_in": date.get("date_in"),
-            "date_out": date.get("date_out", "Pendiente")
+            "date_out": date.get("date_out")
         })
 
     return jsonify({

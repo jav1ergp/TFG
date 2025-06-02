@@ -21,7 +21,7 @@ def detect_plate(frame, vehicle):
         date_in = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         zona = "Zona 1"
         
-        if Plate.is_valid_plate(license_plate_text) and confidence > 0.9:
+        if Plate.is_valid_plate(license_plate_text) and confidence > 0.95:
             return Plate(license_plate_text, confidence, vehicle, date_in, zona)
 
     return None

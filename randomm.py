@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from backend.models.plate import Plate
 from backend.services.db_service import handle_plate
-from config.back_config import MONGO_URI, MONGO_PARKING
+from config.config import MONGO_URI, MONGO_PARKING
 
 client = MongoClient(MONGO_URI)
 db = client[MONGO_PARKING]
@@ -17,7 +17,7 @@ def generar_matricula():
     return f"{numeros}{letras}"
 
 def generar_fecha_aleatoria():
-    dias_atras = random.randint(0, 13)
+    dias_atras = random.randint(0, 2)
     hora_random = random.randint(6, 22)
     minuto_random = random.randint(0, 59)
     
@@ -31,10 +31,10 @@ def get_matriculas_por_zona(zona):
     return list(collection.find({"zona": zona, "date_out": None}))
 
 def simular_accion():
-    opciones = ["entrada", "zona", "salida"]
+    opciones = ["zona", "zona", "zona"]
     accion = random.choice(opciones)
 
-    if accion == "entrada2":
+    if accion == "entrada":
         plate = Plate(
             license_plate_text=generar_matricula(),
             confidence="0.95",

@@ -13,6 +13,7 @@ class NavBar(ft.AppBar):
         self.page.overlay.append(self.dlg)
         self.page.on_resized = self.on_resized
         self.adaptive = True
+        
     
     def build_title(self):
         if self.page.window.width < 600:
@@ -65,7 +66,7 @@ class NavBar(ft.AppBar):
                 )
             )
             actions.extend([
-                self.nav_button("Panel", ft.icons.HOME, "/home"),
+                self.nav_button("Panel de Control", ft.icons.HOME, "/panel"),
                 self.nav_button("Registros", ft.icons.ASSIGNMENT, "/data"),
                 self.nav_button("Actividad", ft.icons.HISTORY, "/logs"),
                 self.nav_button("Graficas", ft.icons.BAR_CHART, "/graphics"),
