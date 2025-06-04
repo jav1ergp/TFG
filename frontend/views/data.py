@@ -99,7 +99,8 @@ def data(page: ft.Page):
     search_field = ft.TextField(
         label="Buscar por matrícula",
         width=250,
-        on_submit=search_plate
+        on_submit=search_plate,
+        adaptive=True,
     )
 
     # Botón de búsqueda
@@ -108,15 +109,16 @@ def data(page: ft.Page):
         color=ft.colors.WHITE,
         bgcolor=ft.colors.BLUE,
         width=70,
+        adaptive=True,
         on_click=search_plate
     )
 
     # Botón para actualizar los datos
-    btn_refresh = ft.ElevatedButton("Actualizar", icon=ft.icons.REFRESH, color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, on_click=lambda _: update_data())
+    btn_refresh = ft.ElevatedButton("Actualizar", icon=ft.icons.REFRESH, color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, adaptive=True, on_click=lambda _: update_data())
 
     # Botones de paginación
-    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=prev_page)
-    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=next_page)
+    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, adaptive=True, on_click=prev_page)
+    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, adaptive=True, on_click=next_page)
 
     page_counter = ft.Text(f"Página {current_page} de {total_pages}")
     # Layout principal

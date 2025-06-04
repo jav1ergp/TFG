@@ -72,11 +72,11 @@ def logs(page: ft.Page):
     )
 
     # Botón para actualizar los datos
-    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.GREEN, on_click=lambda _: update_data())
+    btn_refresh = ft.ElevatedButton("Actualizar", color=ft.Colors.WHITE, width=100, adaptive=True, bgcolor=ft.Colors.GREEN, on_click=lambda _: update_data())
 
     # Botones de paginación
-    btn_prev = ft.ElevatedButton("Anterior", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.BLUE, on_click=prev_page)
-    btn_next = ft.ElevatedButton("Siguiente", color=ft.Colors.WHITE, width=100, bgcolor=ft.Colors.BLUE, on_click=next_page)
+    btn_prev = ft.ElevatedButton("Anterior", color=ft.Colors.WHITE, width=100, adaptive=True, bgcolor=ft.Colors.BLUE, on_click=prev_page)
+    btn_next = ft.ElevatedButton("Siguiente", color=ft.Colors.WHITE, width=100, adaptive=True, bgcolor=ft.Colors.BLUE, on_click=next_page)
 
     page_counter = ft.Text(f"Página {current_page} de {total_pages}", color=ft.Colors.BLACK)
     

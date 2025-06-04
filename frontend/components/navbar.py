@@ -105,7 +105,7 @@ class NavBar(ft.AppBar):
         
         if admin_check:
             base_items.extend([
-                self.menu_item("Panel", ft.icons.HOME, "/home"),
+                self.menu_item("Panel", ft.icons.HOME, "/panel"),
                 self.menu_item("Datos", ft.icons.ASSIGNMENT, "/data"),
                 self.menu_item("Logs", ft.icons.HISTORY, "/logs"),
                 self.menu_item("Graficas", ft.icons.BAR_CHART, "/graphics"),

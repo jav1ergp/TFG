@@ -23,9 +23,9 @@ def panel(page: ft.Page):
         title=ft.Row([ft.Icon(ft.icons.WARNING_AMBER), ft.Text("Confirmar eliminación")]),
         content=ft.Text(),
         actions=[
-            ft.TextButton("Cancelar", on_click=lambda e: close_dialog(e),
+            ft.TextButton("Cancelar", adaptive=True, on_click=lambda e: close_dialog(e),
                     style=ft.ButtonStyle(color=ft.colors.GREY_800)),
-            ft.TextButton("Confirmar", on_click=lambda e: None,
+            ft.TextButton("Confirmar", adaptive=True, on_click=lambda e: None,
                     style=ft.ButtonStyle(color=ft.colors.RED)),
         ],
         actions_alignment=ft.MainAxisAlignment.SPACE_BETWEEN
@@ -39,6 +39,7 @@ def panel(page: ft.Page):
         width=200,
         border_color=ft.colors.BLUE_GREY_400,
         focused_border_color=ft.colors.BLUE,
+        adaptive=True,
         prefix_icon=ft.icons.CREDIT_CARD
     )
     
@@ -68,13 +69,14 @@ def panel(page: ft.Page):
         label="Buscar matrícula",
         width=250,
         prefix_icon=ft.icons.SEARCH,
+        adaptive=True,
         on_submit=lambda e: search_plate(),
     )
             
     btn_search = ft.IconButton(icon=ft.icons.SEARCH, on_click=lambda e: search_plate())
-    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=lambda e: prev_page(e))
-    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, on_click=lambda e: next_page(e))
-    btn_refresh = ft.ElevatedButton("Actualizar", icon=ft.icons.REFRESH, color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, on_click=lambda e: update_rows(e))
+    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=100, adaptive=True, bgcolor=ft.colors.BLUE, on_click=lambda e: prev_page(e))
+    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=100, adaptive=True, bgcolor=ft.colors.BLUE, on_click=lambda e: next_page(e))
+    btn_refresh = ft.ElevatedButton("Actualizar", icon=ft.icons.REFRESH, color=ft.colors.WHITE, width=120, adaptive=True, bgcolor=ft.colors.GREEN, on_click=lambda e: update_rows(e))
     page_counter = ft.Text(f"Página {current_page} de {total_pages}")
 
     table = ft.DataTable(
@@ -96,6 +98,7 @@ def panel(page: ft.Page):
         icon=ft.icons.CLEAR_ALL,
         bgcolor=ft.colors.RED,
         color=ft.colors.WHITE,
+        adaptive=True,
         on_click=lambda e: empty_parking(e)
     )
 

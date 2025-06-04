@@ -50,6 +50,7 @@ def register(page):
         label="Correo electrónico",
         width=300,
         color=ft.Colors.BLACK,
+        adaptive=True,
         prefix_icon=ft.Icon(ft.Icons.PERSON, color=ft.Colors.BLACK)
     )
 
@@ -59,6 +60,7 @@ def register(page):
         can_reveal_password=True,
         width=300,
         color=ft.Colors.BLACK,
+        adaptive=True,
         prefix_icon=ft.Icon(ft.Icons.LOCK, color=ft.Colors.BLACK)
     )
     
@@ -69,6 +71,7 @@ def register(page):
         width=300,
         color=ft.Colors.BLACK,
         prefix_icon=ft.Icon(ft.Icons.LOCK, color=ft.Colors.BLACK),
+        adaptive=True,
         on_submit=on_register_submit
     )
 
@@ -78,6 +81,7 @@ def register(page):
         width=300,
         color=ft.Colors.WHITE,
         bgcolor=ft.Colors.LIGHT_BLUE,
+        adaptive=True,
         style=ft.ButtonStyle(
             shape=ft.RoundedRectangleBorder(radius=10)
         )
@@ -92,6 +96,7 @@ def register(page):
         width=300,
         color=ft.Colors.WHITE,
         bgcolor=ft.Colors.LIGHT_BLUE,
+        adaptive=True,
         style=ft.ButtonStyle(
             shape=ft.RoundedRectangleBorder(radius=10)
         )
@@ -116,6 +121,7 @@ def register(page):
                 text="https://www.ugr.es/universidad/servicios/correo-electronico",
                 url="https://www.ugr.es/universidad/servicios/correo-electronico",
                 width=300,
+                adaptive=True,
             ),
         ]
     )

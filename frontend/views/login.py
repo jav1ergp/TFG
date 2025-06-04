@@ -41,6 +41,7 @@ def login(page):
     
     email_field = ft.TextField(
         label="Correo electrónico",
+        adaptive=True,
         width=300,
         color=ft.Colors.BLACK,
         prefix_icon=ft.Icon(ft.Icons.PERSON, color=ft.Colors.BLACK)
@@ -51,6 +52,7 @@ def login(page):
         password=True,
         can_reveal_password=True,
         width=300,
+        adaptive=True,
         color=ft.Colors.BLACK,
         prefix_icon=ft.Icon(ft.Icons.LOCK, color=ft.Colors.BLACK),
         on_submit=on_login_click
@@ -59,6 +61,7 @@ def login(page):
     login_button = ft.ElevatedButton(
         "INICIAR SESIÓN",
         on_click=on_login_click,
+        adaptive=True,
         width=300,
         color=ft.Colors.WHITE,
         bgcolor=ft.Colors.LIGHT_BLUE,
@@ -74,6 +77,7 @@ def login(page):
         "REGÍSTRATE",
         on_click=on_register_click,
         width=300,
+        adaptive=True,
         color=ft.Colors.WHITE,
         bgcolor=ft.Colors.LIGHT_BLUE,
         style=ft.ButtonStyle(
@@ -100,6 +104,7 @@ def login(page):
                 text="https://www.ugr.es/universidad/servicios/correo-electronico",
                 url="https://www.ugr.es/universidad/servicios/correo-electronico",
                 width=300,
+                adaptive=True,
             ),
         ]
     )

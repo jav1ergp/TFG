@@ -7,15 +7,12 @@ from frontend.components.navbar import NavBar
 class ParkingView2:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.plazas_zona_entrada_coche = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
-        self.plazas_zona_salida_coche = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
-        self.plazas_zona_entrada_moto = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
-        self.plazas_zona_salida_moto = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+        self.plazas_zona_entrada_coche = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
+        self.plazas_zona_salida_coche = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
+        self.plazas_zona_entrada_moto = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
+        self.plazas_zona_salida_moto = ft.Text("", size=25, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
 
-        platform = self.page.platform
-        if platform == "android":
-            self.scale = 1
-        elif platform == "ios":
+        if page.window.width < 600:
             self.scale = 1
         else:
             self.scale = 1.4
@@ -27,10 +24,10 @@ class ParkingView2:
         self.control = self.build_content()
   
     def build_content(self):
-        Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=25, color=ft.colors.WHITE)
-        Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=25, color=ft.colors.WHITE)
-        Entrada = ft.Text("Entrada", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
-        Salida = ft.Text("Salida", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+        Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=25, color=ft.Colors.WHITE)
+        Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=25, color=ft.Colors.WHITE)
+        Entrada = ft.Text("Entrada", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
+        Salida = ft.Text("Salida", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
 
         # Contenedores principales
         self.zona_entrada = ft.Container(
@@ -43,7 +40,7 @@ class ParkingView2:
                 width=130 * self.scale,
                 height=250 * self.scale,
                 padding=20,
-                bgcolor=ft.colors.BLUE,
+                bgcolor=ft.Colors.BLUE,
                 border_radius=ft.border_radius.only(bottom_right=10, bottom_left=10),
             ),
             margin=ft.margin.only(top=130 * self.scale)
@@ -53,7 +50,7 @@ class ParkingView2:
             content=ft.Container(
                 width=130 * self.scale,
                 height=130 * self.scale,
-                bgcolor=ft.colors.TEAL_500,
+                bgcolor=ft.Colors.TEAL_500,
                 border_radius=ft.border_radius.only(top_left=100)
             ),
             margin=ft.margin.only(left=0, top=0)
