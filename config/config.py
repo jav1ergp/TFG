@@ -5,8 +5,8 @@ TOTAL_ENTRY_SPOTS_MOTO = 40
 TOTAL_EXIT_SPOTS_MOTO = 60
 
 URL_ENTRADA = "http://192.168.68.54:8080/video"
-URL_ZONA = "http://192.168.68.51:8080/video"
-URL_SALIDA = "http://192.168.68.50:8080/video"
+URL_ZONA = "http://192.168.68.52:8080/video"
+URL_SALIDA = "http://192.168.68.51:8080/video"
 
 MONGO_URI = "mongodb+srv://javiergp:123@parking.1voz0.mongodb.net/parking"
 MONGO_PARKING = "parking"

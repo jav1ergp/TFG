@@ -10,6 +10,7 @@ from frontend.views.graphics import graphics_page
 from frontend.views.panel import panel
 
 def get_page(page: ft.Page):
+    """Devuelve la vista correspondiente segun la ruta y el usuario"""
     route = page.route
     user = page.session.get("user")
     if not user and route not in ("/login", "/register"):

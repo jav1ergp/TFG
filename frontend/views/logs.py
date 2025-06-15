@@ -4,12 +4,14 @@ from frontend.components.navbar import NavBar
 from config.config import API_URL_LOGS
 
 def logs(page: ft.Page):
+    """Vista de registro de logs del sistema con paginación"""
     current_page = 1
     total_pages = 1
     limit = 7
     
     # Función para actualizar las filas de la tabla
     def update_rows(registros):
+        """Rellena la tabla con los datos recibidos de la API"""
         table.rows.clear()
         for log in registros:
             table.rows.append(ft.DataRow(
@@ -23,8 +25,9 @@ def logs(page: ft.Page):
             ))
         page.update()
 
-    # Funcion datos API
+
     def update_data():
+        """Consulta la API para obtener registros y actualizar la tabla"""
         nonlocal current_page, total_pages
         params = {
             "page": current_page,
@@ -46,12 +49,14 @@ def logs(page: ft.Page):
 
     # Funciones para la paginación
     def next_page(e):
+        """Pasa a la siguiente pagina"""
         nonlocal current_page
         if current_page < total_pages:
             current_page += 1
             update_data()
 
     def prev_page(e):
+        """Vuelve a la pagina anterior"""
         nonlocal current_page
         if current_page > 1:
             current_page -= 1
@@ -98,17 +103,8 @@ def logs(page: ft.Page):
 
     # Datos primera vez
     update_data()
-    
-    def on_resize(e):
-        navbar = page.appbar 
-        navbar.title = navbar.build_title()
-        navbar.actions = navbar.responsive_menu()
-        update_data()
-        page.update()
-        
+
     page.appbar = NavBar(page)
-    page.on_resized = on_resize
-    
     
     return ft.View(
         "/logs",

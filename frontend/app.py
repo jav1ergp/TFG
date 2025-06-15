@@ -8,10 +8,13 @@ import flet as ft
 from frontend.views_handler import get_page
 from frontend.components import *
 
-def main(page: ft.Page):       
+def main(page: ft.Page):
+    """Funcion principal que inicializa la aplicacion Flet"""
+    
     def route_change(route):
-        page.views.clear()        
-            
+        """Evento que se ejecuta al cambiar de ruta en la aplicacion"""
+        page.views.clear()
+        
         view = get_page(page)
         
         if view:
@@ -22,7 +25,6 @@ def main(page: ft.Page):
         page.update()
     
     page.theme_mode="light"
-    page.adaptive=True
     page.on_route_change = route_change
     page.go("/login")  # Ruta inicial
     

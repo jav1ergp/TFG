@@ -1,3 +1,4 @@
+# Logs, paginación
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
 from config.config import MONGO_URI, MONGO_PARKING
@@ -10,8 +11,9 @@ logs_bp = Blueprint("logs", __name__)
 
 @logs_bp.route("/api/logs", methods=["GET"])
 def get_logs():
-    page = int(request.args.get("page", 1))  # Página (por defecto 1)
-    limit = int(request.args.get("limit", 10))  # Número de registros por página (por defecto 10)
+    """Devuelve una lista paginada de logs ordenados por fecha (timestamp) descendente"""
+    page = int(request.args.get("page"))  # Página
+    limit = int(request.args.get("limit"))  # Numero de registros por pagina
     
     skip = (page - 1) * limit  # Calcular el desplazamiento
 

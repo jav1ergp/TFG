@@ -1,4 +1,6 @@
-from flask import Blueprint, jsonify, request
+# API para eliminar plates, si se manda all se eliminan todas, si se manda una especifica se elimina esa
+
+from flask import Blueprint, jsonify
 from pymongo import MongoClient
 from config.config import MONGO_URI, MONGO_PARKING
 
@@ -9,7 +11,8 @@ collection = db['vehicles']
 delete_plate_bp  = Blueprint("delete_plate", __name__)
 
 @delete_plate_bp.route("/api/delete/<plate>", methods=["DELETE"])  
-def delete_plate(plate):  
+def delete_plate(plate):
+    """Elimina registros de vehículos según el valor de la matrícula."""
     if plate == "all":
         collection.delete_many({
             "$or": [

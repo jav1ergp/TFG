@@ -7,8 +7,9 @@ db = client[MONGO_PARKING]
 collection = db['users']
 
 def register_user(email, plain_password):
-    #if not User.is_valid_email(email):
-        #return "invalid_email"
+    """Registra un nuevo usuario si el email es valido y no existe en la base de datos"""
+    if not User.is_valid_email(email):
+        return "invalid_email"
 
     if collection.find_one({"email": email}):
         return "email_exists"
@@ -20,6 +21,7 @@ def register_user(email, plain_password):
     return "success"
 
 def verify_login(email, plain_password):
+    """Verifica las credenciales del usuario comparando la contraseña con la almacenada"""
     user_data = collection.find_one({"email": email})
     
     if user_data:
@@ -29,6 +31,7 @@ def verify_login(email, plain_password):
     return False
 
 def is_admin(email):
+    """Devuelve True si el usuario con ese email es administrador"""
     user_data = collection.find_one({"email": email})
     
     is_user_admin = user_data["admin"]
@@ -36,6 +39,7 @@ def is_admin(email):
     return is_user_admin
 
 def save_user_to_db(user):
+    """Guarda User en la base de datos"""
     user_data = {
         "email": user.email,
         "password": user.password,

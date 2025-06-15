@@ -3,7 +3,10 @@ from backend.services.db_users import register_user
 
 # Vista de Registro
 def register(page):
+    """Vista de registro de usuarios para acceder a la aplicacion"""
+    
     def on_register_submit(e):
+        """Maneja el evento de registro"""
         email = register_email_field.value
         password = register_pass_field.value
         confirm_password = confirm_register_pass_field.value
@@ -34,6 +37,7 @@ def register(page):
         page.update()
 
     def on_login_click(e):
+        """Redirige a la vista de login"""
         page.go("/login") 
 
     logo = ft.Image(

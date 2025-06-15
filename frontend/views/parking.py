@@ -24,6 +24,7 @@ class ParkingView2:
         self.control = self.build_content()
   
     def build_content(self):
+        """Construye el layout principal con las zonas de entrada y salida"""
         Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=25, color=ft.Colors.WHITE)
         Moto_icon = ft.Icon(ft.icons.TWO_WHEELER, size=25, color=ft.Colors.WHITE)
         Entrada = ft.Text("Entrada", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
@@ -86,7 +87,7 @@ class ParkingView2:
         )
       
     def update_scale(self, new_scale):
-        """Update the scale of all components"""
+        """Actualiza el tamaño de todos los elementos según el nuevo scale"""
         if new_scale == self.scale:
             return False
         
@@ -104,15 +105,14 @@ class ParkingView2:
         self.stack.width = 350 * self.scale
         self.stack.height = 350 * self.scale
           
-        # Update container margins
         self.stack.controls[0].margin = ft.margin.only(top=130 * self.scale)
         self.stack.controls[2].margin = ft.margin.only(left=130 * self.scale, top=0)
-        
-        # Update the control  
+         
         self.control.update()
         return True
     
     async def update_parking_status(self):
+        """Consulta periodicamente la API para actualizar las plazas libres"""
         while True:
             if self.page.route != "/parking":
                 break
@@ -153,7 +153,7 @@ def parking(page: ft.Page):
         navbar.title = navbar.build_title()
         navbar.actions = navbar.responsive_menu()
           
-        # Update parking view scale
+        # Update la escala
         parking_view.update_scale(new_scale)
           
         page.update()

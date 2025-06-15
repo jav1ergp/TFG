@@ -1,3 +1,5 @@
+# Clase User
+
 import bcrypt
 import re
 
@@ -25,6 +27,7 @@ class User:
 
     @staticmethod
     def is_valid_email(email):
+        """Valida si un correo cumple con el formato estándar de un correo"""
         email_valid = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         match = re.match(email_valid, email)
 

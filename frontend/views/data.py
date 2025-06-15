@@ -5,15 +5,18 @@ from config.config import API_URL_DATA
 
 
 def data(page: ft.Page):
+    """Vista que muestra los registros de entradas y salidas del parking 
+    en una tabla paginada con opciones de busqueda y ordenamiento"""
     current_page = 1
     total_pages = 1
     sort_field = "date_in"
     sort_order = 1
     search_term = ""
     limit = 7
-        
-    # Función para actualizar las filas de la tabla
+    
+    
     def update_rows(registros):
+        """Actualiza las filas de la tabla con nuevos registros"""
         table.rows.clear()
         for data in registros:
             table.rows.append(ft.DataRow(
@@ -28,8 +31,8 @@ def data(page: ft.Page):
             ))
         page.update()
         
-    # Función para actualizar los datos de la tabla
     def update_data():
+        """Consulta la API para obtener registros y actualizar la tabla"""
         nonlocal current_page, total_pages
         params = {
             "page": current_page,
@@ -54,6 +57,7 @@ def data(page: ft.Page):
             
     # Función de ordenamiento 
     def sort_data(e):
+        """Cambia el parametro por el que ordena y actualiza los datos"""
         nonlocal sort_field, sort_order, current_page  
         sort_field = e.control.data["field"]
         sort_order = 1 if sort_order == -1 else -1  # Alternar orden
@@ -62,6 +66,7 @@ def data(page: ft.Page):
    
     # Función de búsqueda por matrícula
     def search_plate(e):
+        """Guarda la matricula"""
         nonlocal search_term, current_page
         search_term = search_field.value.strip().upper()
         current_page = 1
@@ -69,12 +74,14 @@ def data(page: ft.Page):
         
 
     def next_page(e):
+        """Pasa a la siguiente pagina"""
         nonlocal current_page
         if current_page < total_pages:
             current_page += 1
             update_data()
 
     def prev_page(e):
+        """Vuelve a la pagina anterior"""
         nonlocal current_page
         if current_page > 1:
             current_page -= 1
@@ -117,8 +124,8 @@ def data(page: ft.Page):
     btn_refresh = ft.ElevatedButton("Actualizar", icon=ft.icons.REFRESH, color=ft.colors.WHITE, width=120, bgcolor=ft.colors.GREEN, adaptive=True, on_click=lambda _: update_data())
 
     # Botones de paginación
-    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, adaptive=True, on_click=prev_page)
-    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=100, bgcolor=ft.colors.BLUE, adaptive=True, on_click=next_page)
+    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=110, bgcolor=ft.colors.BLUE, adaptive=True, on_click=prev_page)
+    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=110, bgcolor=ft.colors.BLUE, adaptive=True, on_click=next_page)
 
     page_counter = ft.Text(f"Página {current_page} de {total_pages}")
     # Layout principal
@@ -141,16 +148,6 @@ def data(page: ft.Page):
     page.appbar = NavBar(page)
     # Datos primera vez
     update_data()
-
-    def on_resize(e):
-        navbar = page.appbar 
-        navbar.title = navbar.build_title()
-        navbar.actions = navbar.responsive_menu()
-        update_data()
-        page.update()
-            
-
-    page.on_resized = on_resize
     
     return ft.View(
         "/data",

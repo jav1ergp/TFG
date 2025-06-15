@@ -6,12 +6,13 @@ from config.config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENT
 
 
 class ParkingZone:
+    """Clase que construye la tarjeta de informacion que muestra las plazas disponibles
+    de una zona del parking"""
     def __init__(self, name, total_car, total_moto):
         self.name = name
         self.total_slots_car = total_car
         self.total_slots_moto = total_moto
 
-        # Crear controles directamente
         self.status_car = ft.Text(f"{total_car}/{total_car}", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
         self.progress_car = ft.ProgressBar(expand=True, color="green", bgcolor="white")
         self.status_moto = ft.Text(f"{total_moto}/{total_moto}", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
@@ -20,6 +21,7 @@ class ParkingZone:
         self.control = self._build_card()
 
     def _build_card(self):
+        """Construye la tarjeta de la zona de parking"""
         title = ft.Text(self.name, size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
         P_icon = ft.Icon(ft.icons.LOCAL_PARKING, size=30, color="#84c3e3")
         Car_icon = ft.Icon(ft.icons.DIRECTIONS_CAR, size=30, color="#84c3e3")
@@ -42,6 +44,7 @@ class ParkingZone:
         )
 
     def update_status(self, available_car, available_moto):
+        """Actualiza los datos de las plazas libres."""
         self.status_car.value = f"{available_car}/{self.total_slots_car}"
         self.progress_car.value = available_car / self.total_slots_car
         self.status_moto.value = f"{available_moto}/{self.total_slots_moto}"
@@ -50,6 +53,7 @@ class ParkingZone:
             self.control.update()
 
 class ParkingView:
+    """Clase que construye las distintas zonas del parking."""
     def __init__(self):
         self.zone_a = ParkingZone("Zona Entrada", TOTAL_ENTRY_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO)
         self.zone_b = ParkingZone("Zona Salida", TOTAL_EXIT_SPOTS_CAR, TOTAL_EXIT_SPOTS_MOTO)
@@ -86,6 +90,7 @@ class ParkingView:
         )
 
     async def update_parking_status(self, page):
+        """Consulta periodicamente la API para actualizar las plazas libres"""
         while True:
             if page.route != "/home":
                 break
@@ -98,11 +103,12 @@ class ParkingView:
                             self.zone_b.update_status(data.get("salida_coche"), data.get("salida_moto"))
             except Exception as e:
                 print("Error al obtener datos de la API:", e)
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
 
 
 
 def parking_page(page: ft.Page):
+    """Pagina principal del sistema donde se construyen las clases"""
     parking_view = ParkingView()
     page.add(parking_view)
     page.appbar = NavBar(page)
@@ -116,7 +122,6 @@ def parking_page(page: ft.Page):
         
     # Iniciar la actualización periódica
     page.run_task(parking_view.update_parking_status, page)
-    
     
     return ft.View(
         "/home",

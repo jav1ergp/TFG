@@ -1,3 +1,5 @@
+# API para contar plazas restando el total a los registrados
+
 from flask import Blueprint, jsonify
 from pymongo import MongoClient
 from config.config import TOTAL_ENTRY_SPOTS_CAR, TOTAL_EXIT_SPOTS_CAR, TOTAL_ENTRY_SPOTS_MOTO, TOTAL_EXIT_SPOTS_MOTO, MONGO_URI, MONGO_PARKING

@@ -1,3 +1,6 @@
+# Módulo para la deteccion concurrente de vehiculos y matriculas en varias camaras.
+# Se lanza un hilo por cada camara (entrada, zona, salida), detecta vehiculos (coches y motos)
+
 from threading import Thread
 import cv2
 from ultralytics import YOLO
@@ -5,7 +8,7 @@ import logging
 from backend.services import alpr_service
 from backend.services import db_service
 
-# Configuración de logging para evitar mensajes excesivos
+# Para evitar mensajes excesivos por la terminal
 logging.getLogger('open_image_models.detection.core.yolo_v9.inference').handlers.clear()
 logging.getLogger('open_image_models.detection.pipeline.license_plate').handlers.clear()
 logging.getLogger('open_image_models.detection.core.yolo_v9.inference').setLevel(logging.WARNING)
@@ -13,6 +16,8 @@ logging.getLogger('open_image_models.detection.pipeline.license_plate').setLevel
 logging.getLogger('ultralytics').setLevel(logging.CRITICAL)
 
 def start_detection(url_entrada, url_zona, url_salida):
+    """Inicia la captura y procesamiento concurrente de video para tres camaras:
+        entrada, zona y salida"""
     cameras = {
         "Entrada": url_entrada,
         "Zona": url_zona,
@@ -26,6 +31,8 @@ def start_detection(url_entrada, url_zona, url_salida):
 
 
 def process_camera(source, url):
+    """Procesa frames de video en un hilo independiente para cada camara.
+    Detecta vehiculos usando YOLOv8 y detecta matriculas usando Fast-ALPR"""
     model = YOLO('yolov8n.pt')
     cap = cv2.VideoCapture(url)
     

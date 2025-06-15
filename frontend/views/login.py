@@ -2,7 +2,10 @@ import flet as ft
 from backend.services.db_users import is_admin, verify_login
 
 def login(page):
+    """Vista de login de usuarios para acceder a la aplicacion"""
+    
     def on_login_click(e):
+        """Maneja el evento de inicio de sesion"""
         email = email_field.value
         password = pass_field.value
         
@@ -25,6 +28,7 @@ def login(page):
         page.update()
         
     def on_register_click(e):
+        """Redirige a la vista de registro"""
         page.go("/register") 
 
     logo = ft.Image(

@@ -7,6 +7,7 @@ from frontend.components.navbar import NavBar
 from frontend.components.graphics import *
 
 def obtener_datos():
+    """Obtiene y procesa los datos desde la API para generar estadísticas."""
     try:
         response = requests.get(API_URL_DATA, params={"limit": 1000})
         response.raise_for_status()
@@ -40,6 +41,7 @@ def obtener_datos():
     return entradas_dia, ocupacion_zonas, tipos_vehiculos
 
 def graphics_page(page: ft.Page):
+    """Vista que muestra las gráficas con estadísticas del parking."""
     page.appbar = NavBar(page)
     
     entradas_dia, ocupacion_zonas, tipos_vehiculos = obtener_datos()

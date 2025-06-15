@@ -1,8 +1,12 @@
+# Modulo para inicializar y utilizar el sistema de reconocimiento de matrículas (ALPR).
+# Usa modelos YOLO y OCR para detectar matrículas en imágenes y devolver una instancia de Plate válida.
+
 from fast_alpr import ALPR
 from datetime import datetime
 from backend.models.plate import Plate
 
 def init_alpr():
+    """Inicializa el sistema ALPR con los modelos predefinidos"""
     return ALPR(
         detector_model="yolo-v9-t-384-license-plate-end2end",
         ocr_model="global-plates-mobile-vit-v2-model",
@@ -11,6 +15,7 @@ def init_alpr():
     )
 
 def detect_plate(frame, vehicle):
+    """ Detecta una matrícula en una imagen y devuelve una instancia de Plate si es válida"""
     alpr = init_alpr()
     results = alpr.predict(frame)
 

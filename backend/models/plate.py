@@ -1,3 +1,5 @@
+# Clase plate, guardar plate y estructura de la matricula
+
 from pymongo import MongoClient
 from datetime import datetime
 from backend.models.log import Log
@@ -18,6 +20,7 @@ class Plate:
     
     @classmethod
     def save_plate(cls, plate):
+        """Guarda una matricula y su log de entrada en la base de datos"""
         plate_data = {
             "plate": plate.license_plate_text,
             "confidence": plate.confidence,
@@ -44,17 +47,19 @@ class Plate:
         
         Log.save_log(log)
         
+        
         return plate
     
     @staticmethod
     def is_valid_plate(license_plate_text):
+        """Valida si una matricula cumple el formato español moderno o antiguo"""
         license_plate_text = license_plate_text.replace(" ", "").replace("-", "")
         
-        # Matrícula moderna: 4 dígitos + 3 letras (ejemplo: 1234XYZ)
+        # Matricula moderna: 4 dígitos + 3 letras (ejemplo: 1234XYZ)
         if len(license_plate_text) == 7 and license_plate_text[:4].isdigit() and license_plate_text[4:].isalpha() and license_plate_text[4:].isupper():
             return True
         
-        # Matrícula antigua: 1-2 letras + 4 dígitos + 1-2 letras (ejemplo: M1234AB, MA1234A)
+        # Matricula antigua: 1-2 letras + 4 dígitos + 1-2 letras (ejemplo: M1234AB, MA1234A)
         if 6 <= len(license_plate_text) <= 8:
             for i in range(len(license_plate_text)):
                 if license_plate_text[i].isdigit():

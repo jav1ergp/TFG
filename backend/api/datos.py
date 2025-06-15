@@ -1,3 +1,5 @@
+# Datos, paginación, ordenación, filtros y filtrado por matrícula.
+
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
 from config.config import MONGO_URI, MONGO_PARKING
@@ -10,6 +12,7 @@ data_bp = Blueprint("data", __name__)
 
 @data_bp.route("/api/data", methods=["GET"])
 def get_data():
+    """Devuelve una lista paginada de registros de vehículos desde la base de datos"""
     page = int(request.args.get("page", 1))
     limit = int(request.args.get("limit", 10))
     sort_field = request.args.get("sort", "date_in")

@@ -1,21 +1,22 @@
 import flet as ft
-from backend.images import *
 import asyncio
 
 class NavBar(ft.AppBar):
+    """Barra de navegacion que se adapta al tamaño de la ventana y al tipo de usuario (admin o no). 
+    Incluye titulo, menus y control de sesion"""
     def __init__(self, page: ft.Page):
         super().__init__()
         self.page = page
+        self.adaptative = False
         self.bgcolor = ft.colors.LIGHT_BLUE
         self.title = self.build_title()
         self.actions = self.responsive_menu()
         self.dlg = self.confirm_dialog()
         self.page.overlay.append(self.dlg)
         self.page.on_resized = self.on_resized
-        self.adaptive = True
-        
     
     def build_title(self):
+        """Genera el titulo segun el ancho de la ventana"""
         if self.page.window.width < 600:
             text=ft.Text(
                 "UGR",
@@ -37,6 +38,8 @@ class NavBar(ft.AppBar):
         )
     
     def responsive_menu(self):
+        """Crea el menu de navegacion segun si es vista de movil o escritorio,
+        y si el usuario es administrador"""
         actions = []
         
         user = self.page.session.get("user") or {}
@@ -52,6 +55,7 @@ class NavBar(ft.AppBar):
     
     
     def desktop_menu(self, admin_check):
+        """Menu para pantallas grandes, muestra botones si el usuario es admin"""
         actions = []
         settings_items = []
         
@@ -101,6 +105,7 @@ class NavBar(ft.AppBar):
         return actions
     
     def mobile_menu(self, admin_check):
+        """Menu para moviles en forma de popup, muestra botones si el usuario es admin"""
         base_items = []
         
         if admin_check:
@@ -135,6 +140,7 @@ class NavBar(ft.AppBar):
         )
     
     def toggle_theme(self):
+        """Cambia entre modo claro y oscuro"""
         self.page.on_resized = self.on_resized
         self.page.theme_mode = (
             ft.ThemeMode.LIGHT if self.page.theme_mode == ft.ThemeMode.DARK else ft.ThemeMode.DARK
@@ -143,11 +149,13 @@ class NavBar(ft.AppBar):
         self.page.go(self.page.route)
 
     def on_resized(self, e):
+        """Reacciona al cambio de tamaño de la ventana, reconstruyendola"""
         self.actions = self.responsive_menu()
         self.title = self.build_title()
         self.page.update()
     
     def user_status(self):
+        """Muestra el nombre del usuario logueado."""
         user = self.page.session.get("user")
         name = user.get('email').split('@')[0].upper()
         
@@ -169,6 +177,7 @@ class NavBar(ft.AppBar):
         )
     
     def menu_item(self, text, icon, route):
+        """Funcion para crear directamente un popup del menu"""
         return ft.PopupMenuItem(
             on_click=lambda _: self.page.go(route),
             height=40,
@@ -179,6 +188,7 @@ class NavBar(ft.AppBar):
         )
     
     def nav_button(self, tooltip, icon, route):
+        """Funcion para crear directamente un boton del menu"""
         return ft.IconButton(
             on_click=lambda _: self.page.go(route),
             icon=icon,
@@ -188,6 +198,7 @@ class NavBar(ft.AppBar):
         )
     
     def confirm_dialog(self):
+        """Dialogo de confirmacion de cerrar sesion"""
         return ft.AlertDialog(
             modal=True,
             title=ft.Row([ft.Icon(ft.icons.WARNING_AMBER), ft.Text("Confirmar")]),
@@ -202,15 +213,18 @@ class NavBar(ft.AppBar):
         )
         
     def show_dialog(self):
+        """Muestra el dialogo de confirmacion de cerrar sesion"""
         self.dlg.open = True
         self.page.update()
     
     def logout(self, e):
+        """Cierra sesion y redirige al login"""
         self.page.session.clear()
         self.dlg.open = False
         self.page.update()
         self.page.go("/login")
     
     def close_dialog(self, e):
+        """Cierra el cuadro de dialogo"""
         self.dlg.open = False
         self.page.update()

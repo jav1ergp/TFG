@@ -7,6 +7,7 @@ from datetime import datetime
 from config.config import API_URL_DATA, API_URL_REGISTER, API_URL_DELETE
 
 def panel(page: ft.Page):
+    """Permite registrar nuevas matrículas, ver registros activos, buscar, paginar, eliminar y vaciar matriculas del parking."""
     page.appbar = NavBar(page)
     
     current_page = 1
@@ -23,9 +24,9 @@ def panel(page: ft.Page):
         title=ft.Row([ft.Icon(ft.icons.WARNING_AMBER), ft.Text("Confirmar eliminación")]),
         content=ft.Text(),
         actions=[
-            ft.TextButton("Cancelar", adaptive=True, on_click=lambda e: close_dialog(e),
+            ft.TextButton("Cancelar", on_click=lambda e: close_dialog(e),
                     style=ft.ButtonStyle(color=ft.colors.GREY_800)),
-            ft.TextButton("Confirmar", adaptive=True, on_click=lambda e: None,
+            ft.TextButton("Confirmar", on_click=lambda e: None,
                     style=ft.ButtonStyle(color=ft.colors.RED)),
         ],
         actions_alignment=ft.MainAxisAlignment.SPACE_BETWEEN
@@ -103,12 +104,14 @@ def panel(page: ft.Page):
     )
 
     def search_plate():
+        """Actualiza la tabla filtrando por la matrícula introducida"""
         nonlocal current_page, search_term
         search_term = search_input.value.strip().upper()
         current_page = 1
         update_rows()
 
     def update_rows():
+        """Actualiza la tabla de registros"""
         nonlocal current_page, total_pages, search_term
 
         table.rows.clear()
@@ -172,6 +175,7 @@ def panel(page: ft.Page):
 
 
     def registrar_plate(e):
+        """Registra una nueva matricula en el sistema."""
         if not plate_input.value or not zonas.value or not tipos.value:
             result.value = "Todos los campos son obligatorios"
             result.color = ft.colors.RED
@@ -205,28 +209,33 @@ def panel(page: ft.Page):
         page.update()
     
     def close_dialog(e):
+        """Cierra el cuadro de dialogo"""
         dlg.open = False
         page.update()
 
     def next_page(e):
+        """Pasa a la siguiente pagina"""
         nonlocal current_page
         if current_page < total_pages:
             current_page += 1
             update_rows()
 
     def prev_page(e):
+        """Vuelve a la pagina anterior"""
         nonlocal current_page
         if current_page > 1:
             current_page -= 1
             update_rows()
             
     def delete_one_plate(e, matricula):
+        """Confirmacion para eliminar una matricula"""
         dlg.content = ft.Text("¿Está seguro que desea eliminar esta matrícula?", size=14)
         dlg.actions[1].on_click = lambda e: delete_plate(e, matricula)
         dlg.open = True
         page.update()
     
     def delete_plate(e, matricula):
+        """Elimina una matrícula del sistema"""
         try:
             r = requests.delete(f"{API_URL_DELETE}/{matricula.license_plate_text}")   
             if r.status_code == 200:
@@ -257,12 +266,14 @@ def panel(page: ft.Page):
             page.update()
         
     def empty_parking(e):
+        """Confirmacion para eliminar todas las matriculas del parking"""
         dlg.content = ft.Text("¿Está seguro que desea vaciar todo el parking?", size=14)
         dlg.actions[1].on_click = lambda e: confirm_empty_parking(e)
         dlg.open = True
         page.update()
     
     def confirm_empty_parking(e):
+        """Elimina todas las matriculas dentro del parking"""
         try:
             r = requests.delete(f"{API_URL_DELETE}/all")
             if r.status_code == 200:
@@ -291,6 +302,7 @@ def panel(page: ft.Page):
         page.update()
 
     def on_resize(e):
+        """Actualiza el numero de datos que se muestran en la tabla y recarga la tabla"""
         nonlocal limit
         if page.window.width < 600:
             limit = 5
@@ -299,32 +311,34 @@ def panel(page: ft.Page):
         navbar = page.appbar 
         navbar.title = navbar.build_title()
         navbar.actions = navbar.responsive_menu()
-        update_inputs_layout()  
-        update_rows()   
+        update_inputs_layout()
+        update_rows()
 
     page.on_resized = on_resize
 
-    def create_inputs_layout():  
+    def create_inputs_layout():
+        """Diseño responsive para los inputs de matrícula, zona y tipo"""
         if limit == 5:
-            return ft.Column(  
-                [plate_input, zonas, tipos],  
-                spacing=20,  
-                alignment=ft.MainAxisAlignment.CENTER,  
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER  
-            )  
+            return ft.Column(
+                [plate_input, zonas, tipos],
+                spacing=20,
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            )
         else:
-            return ft.Row(  
-                [plate_input, zonas, tipos],  
-                spacing=60,  
-                alignment=ft.MainAxisAlignment.CENTER  
-            )  
+            return ft.Row(
+                [plate_input, zonas, tipos],
+                spacing=60,
+                alignment=ft.MainAxisAlignment.CENTER
+            )
     
-    inputs_container = ft.Container(content=create_inputs_layout())  
+    inputs_container = ft.Container(content=create_inputs_layout())
     
-    def update_inputs_layout():  
-        inputs_container.content = create_inputs_layout()  
+    def update_inputs_layout():
+        """Actualiza el diseño responsive"""
+        inputs_container.content = create_inputs_layout()
         page.update()
-        
+    
     # cargar datos iniciales
     update_rows()
     

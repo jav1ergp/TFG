@@ -1,3 +1,5 @@
+# Clase Log y guardar log
+
 from pymongo import MongoClient
 from datetime import datetime
 from config.config import MONGO_URI, MONGO_PARKING
@@ -17,6 +19,7 @@ class Log:
 
     @classmethod
     def save_log(cls, log):
+        """Guarda un log en la base de datos"""
         log_data = {
             "action": log.action,
             "description": log.description,

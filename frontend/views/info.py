@@ -5,6 +5,7 @@ from config.config import API_URL_SPOTS
 from datetime import datetime
 
 class InfoView:
+    """Clase que construye la vista de informacion rapida sobre plazas disponibles para dentro del parking"""
     def __init__(self, page: ft.Page):
         self.page = page
         self.title = ft.Text("", weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
@@ -19,7 +20,8 @@ class InfoView:
 
 
     def build_view(self):
-    # Si la pantalla es más ancha que alta
+        """Construye la vista principal con diseño adaptable."""
+        # Si la pantalla es más ancha que alta
         if self.page.height < self.page.width:
             cont = ft.Column(
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -70,6 +72,7 @@ class InfoView:
 
 
     def update_font_sizes(self, page: ft.Page):
+        """Actualiza los tamaños de fuente en función de la resolucion de pantalla."""
         scale = min(page.width, page.height)
         base_size = scale // 12
 
@@ -85,10 +88,12 @@ class InfoView:
         self.date_time.size = base_size - 6
 
     def update_date_time(self):
+        """Actualiza la fecha y hora mostrada."""
         now = datetime.now()
         self.date_time.value = now.strftime("%d %B %Y, %H:%M")
         
     def update_input(self, input, label, value):
+        """Actualiza el estado de plaza en caso de que este completo."""
         if value == 0:
             input.value = f"{label} COMPLETO"
             input.color = ft.colors.RED
@@ -97,6 +102,7 @@ class InfoView:
             input.color = ft.colors.GREEN_ACCENT
 
     async def update_status(self, page: ft.Page):
+        """Consulta periodica a la API para actualizar plazas disponibles."""
         while page.route == "/info":
             try:
                 async with ClientSession() as session:
@@ -113,9 +119,11 @@ class InfoView:
                             self.page.update()
             except Exception as e:
                 print("Error al obtener datos de la API:", e)
-            await asyncio.sleep(5)
+            await asyncio.sleep(0.1)
 
 def info_page(page: ft.Page):
+    """Vista pensada para ponerla en una pantalla en la entrada del parking 
+    que muestra las plazas disponibles de un vistazo rapido"""
     info_view = InfoView(page)
     async def on_view_loaded():
         info_view.update_font_sizes(page)

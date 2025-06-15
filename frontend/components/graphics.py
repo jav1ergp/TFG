@@ -1,3 +1,5 @@
+# Graficas estadisticas para la interfaz en Flet: tipos de vehiculos, ocupacion por zona y entradas por dia
+
 import flet as ft
 from collections import Counter
 
@@ -7,6 +9,7 @@ same_style: dict = {
     "border_radius": 10,
 }
 
+# Grafica circular: Tipos de vehiculos (coche o moto)
 class Graf1(ft.Container):
     def __init__(self, tipos_vehiculos):
         super().__init__(**same_style)
@@ -42,6 +45,7 @@ class Graf1(ft.Container):
             expand=True
         )
     
+# Grafica de barras: Ocupacion por zona (Zona 1 y Zona 2)
 class Graf2(ft.Container):
     def __init__(self, ocupacion_zonas):
         super().__init__(**same_style)
@@ -116,6 +120,7 @@ class Graf2(ft.Container):
                     ],
         )
         
+# Grafica de lineas: Entradas por dia
 class Graf3(ft.Container):
     def __init__(self, entradas_dia):
         super().__init__(**same_style)

@@ -1,3 +1,5 @@
+# API para registrar plates
+
 from flask import Blueprint, jsonify, request
 from pymongo import MongoClient
 from backend.models.plate import Plate
@@ -12,6 +14,7 @@ register_plate_bp  = Blueprint("register_plate", __name__)
 
 @register_plate_bp.route("/api/register", methods=["POST"])
 def register_plate():
+    """Registra una nueva entrada de vehículo en el parking si no está ya dentro"""
     data = request.json
     plate_text = data.get("plate")
     zona = data.get("zona")
