@@ -75,8 +75,8 @@ def panel(page: ft.Page):
     )
             
     btn_search = ft.IconButton(icon=ft.icons.SEARCH, on_click=lambda e: search_plate())
-    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=100, adaptive=True, bgcolor=ft.colors.BLUE, on_click=lambda e: prev_page(e))
-    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=100, adaptive=True, bgcolor=ft.colors.BLUE, on_click=lambda e: next_page(e))
+    btn_prev = ft.ElevatedButton("Anterior", icon=ft.icons.ARROW_BACK,  color=ft.colors.WHITE, width=110, adaptive=True, bgcolor=ft.colors.BLUE, on_click=lambda e: prev_page(e))
+    btn_next = ft.ElevatedButton("Siguiente", icon=ft.icons.ARROW_FORWARD, color=ft.colors.WHITE, width=110, adaptive=True, bgcolor=ft.colors.BLUE, on_click=lambda e: next_page(e))
     btn_refresh = ft.ElevatedButton("Actualizar", icon=ft.icons.REFRESH, color=ft.colors.WHITE, width=120, adaptive=True, bgcolor=ft.colors.GREEN, on_click=lambda e: update_rows(e))
     page_counter = ft.Text(f"Página {current_page} de {total_pages}")
 

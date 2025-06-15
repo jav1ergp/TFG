@@ -32,7 +32,7 @@ def login(page):
         page.go("/register") 
 
     logo = ft.Image(
-        src="https://raw.githubusercontent.com/jav1ergp/TFG/refs/heads/main/backend/images/ugr-horizontal-color.svg",
+        src="https://raw.githubusercontent.com/jav1ergp/TFG/main/backend/images/ugr-horizontal-color.svg",
         width=90,
         height=100,
         fit=ft.ImageFit.SCALE_DOWN,
